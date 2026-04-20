@@ -25,7 +25,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.isharaai.isl.R
 import com.isharaai.isl.feature.chat.ChatBubble
 import com.isharaai.isl.feature.chat.ChatInputBar
-import com.isharaai.isl.feature.chat.TypingIndicator
 import com.isharaai.isl.core.theme.*
 import com.isharaai.isl.feature.chat.ChatViewModel
 
@@ -167,13 +166,6 @@ fun ChatScreen(
         ) {
             items(uiState.messages, key = { it.id }) { message ->
                 ChatBubble(message = message)
-            }
-
-            // Typing indicator while AI is generating
-            if (uiState.isGenerating) {
-                item(key = "typing") {
-                    TypingIndicator()
-                }
             }
         }
 

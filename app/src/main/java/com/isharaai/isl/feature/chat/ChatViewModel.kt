@@ -168,11 +168,12 @@ class ChatViewModel @Inject constructor(
             return
         }
 
-        // 
+        // Create a placeholder AI message that will be streamed into
+        val streamingMsgId = UUID.randomUUID().toString()
+        val placeholderMsg = ChatMessage(id = streamingMsgId, text = "", isUser = false)
+        _uiState.update { it.copy(messages = it.messages + placeholderMsg, isGenerating = true) }
+
         viewModelScope.launch(kotlinx.coroutines.Dispatchers.Default) {
-            kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
-                _uiState.update { it.copy(isGenerating = true) }
-            }
             try {
                 if (conversation == null) {
                     val engine = LiteRTModelLoader.getOrLoad(context)
@@ -183,21 +184,50 @@ class ChatViewModel @Inject constructor(
                 }
 
                 val inputMsg = Message.user(text.trim())
-                val response = conversation!!.sendMessage(inputMsg)
-                val responseText = response.contents.contents.joinToString("") { part ->
-                    when (part) {
-                        is Content.Text -> part.text
-                        else -> ""
+                val accumulated = StringBuilder()
+
+                // Stream tokens as they are generated
+                conversation!!.sendMessageAsync(inputMsg).collect { partialMessage ->
+                    val delta = partialMessage.contents.contents.joinToString("") { part ->
+                        when (part) {
+                            is Content.Text -> part.text
+                            else -> ""
+                        }
+                    }
+                    accumulated.append(delta)
+
+                    // Update the placeholder message with accumulated text
+                    val currentText = accumulated.toString()
+                    kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                        _uiState.update { state ->
+                            state.copy(
+                                messages = state.messages.map { msg ->
+                                    if (msg.id == streamingMsgId) msg.copy(text = currentText) else msg
+                                }
+                            )
+                        }
                     }
                 }
 
-                val finalText = if (responseText.isBlank()) "..." else responseText
+                // Persist the final complete message
+                val finalText = accumulated.toString().ifBlank { "..." }
                 kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
-                    addAiMessage(finalText)
+                    _uiState.update { state ->
+                        state.copy(
+                            messages = state.messages.map { msg ->
+                                if (msg.id == streamingMsgId) msg.copy(text = finalText) else msg
+                            }
+                        )
+                    }
+                    persistMessage(ChatMessage(id = streamingMsgId, text = finalText, isUser = false))
                 }
             } catch (e: Exception) {
                 Log.e("ChatViewModel", "Inference failed", e)
                 kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                    // Remove the empty placeholder and show error
+                    _uiState.update { state ->
+                        state.copy(messages = state.messages.filter { it.id != streamingMsgId })
+                    }
                     addSystemMessage(R.string.chat_error)
                 }
             } finally {
@@ -219,10 +249,12 @@ class ChatViewModel @Inject constructor(
             return
         }
 
+        // Create a placeholder AI message that will be streamed into
+        val streamingMsgId = UUID.randomUUID().toString()
+        val placeholderMsg = ChatMessage(id = streamingMsgId, text = "", isUser = false)
+        _uiState.update { it.copy(messages = it.messages + placeholderMsg, isGenerating = true) }
+
         viewModelScope.launch(kotlinx.coroutines.Dispatchers.Default) {
-            kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
-                _uiState.update { it.copy(isGenerating = true) }
-            }
             try {
                 // Ensure conversation exists with ISL system prompt
                 if (conversation == null) {
@@ -270,24 +302,50 @@ class ChatViewModel @Inject constructor(
                     Content.Text(prompt)
                 ))
 
-                val response = conversation!!.sendMessage(multimodalMessage)
-                
-                val responseText = response.contents.contents.joinToString("") { part ->
-                    when (part) {
-                        is Content.Text -> part.text
-                        else -> ""
+                val accumulated = StringBuilder()
+
+                // Stream tokens as they are generated
+                conversation!!.sendMessageAsync(multimodalMessage).collect { partialMessage ->
+                    val delta = partialMessage.contents.contents.joinToString("") { part ->
+                        when (part) {
+                            is Content.Text -> part.text
+                            else -> ""
+                        }
+                    }
+                    accumulated.append(delta)
+
+                    val currentText = accumulated.toString()
+                    kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                        _uiState.update { state ->
+                            state.copy(
+                                messages = state.messages.map { msg ->
+                                    if (msg.id == streamingMsgId) msg.copy(text = currentText) else msg
+                                }
+                            )
+                        }
                     }
                 }
 
-                // Switch back to Main thread to safely update UI with the AI response
-                val finalText = if (responseText.isBlank()) "..." else responseText
+                // Persist the final complete message
+                val finalText = accumulated.toString().ifBlank { "..." }
                 kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
-                    addAiMessage(finalText)
+                    _uiState.update { state ->
+                        state.copy(
+                            messages = state.messages.map { msg ->
+                                if (msg.id == streamingMsgId) msg.copy(text = finalText) else msg
+                            }
+                        )
+                    }
+                    persistMessage(ChatMessage(id = streamingMsgId, text = finalText, isUser = false))
                 }
             } catch (e: Exception) {
             
                 Log.e(TAG, "Image inference failed natively", e)
                 kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                    // Remove the empty placeholder and show error
+                    _uiState.update { state ->
+                        state.copy(messages = state.messages.filter { it.id != streamingMsgId })
+                    }
                     addSystemMessage(R.string.chat_error)
                 }
             } finally {

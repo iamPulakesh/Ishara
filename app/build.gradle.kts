@@ -10,58 +10,63 @@ plugins {
 
 val sherpaRelease = "https://github.com/iamPulakesh/Ishara/releases/download/Sherpa-ONNX-models"
 
-data class ModelFile(val subDir: String, val name: String, val sizeBytes: Long)
+data class RemoteFile(val targetPath: String, val downloadName: String, val sizeBytes: Long)
 
-val sherpaModels = listOf(
-    // English (sherpa-en)
-    ModelFile("sherpa-en", "decoder.onnx",       2_092_272),
-    ModelFile("sherpa-en", "encoder.int8.onnx",  42_845_182),
-    ModelFile("sherpa-en", "joiner.int8.onnx",   259_572),
-    ModelFile("sherpa-en", "tokens.txt",         5_048),
-    // Bengali (sherpa-bn)
-    ModelFile("sherpa-bn", "decoder.onnx",       2_093_080),
-    ModelFile("sherpa-bn", "encoder.onnx",       90_994_145),
-    ModelFile("sherpa-bn", "joiner.onnx",        1_026_462),
-    ModelFile("sherpa-bn", "tokens.txt",         6_252),
+val filesToDownload = listOf(
+    // AAR Library
+    RemoteFile("libs/sherpa-onnx.aar", "sherpa-onnx.aar", 56_469_869),
+    
+    // English Models (sherpa-en)
+    RemoteFile("src/main/assets/sherpa-en/decoder.onnx",       "sherpa-en--decoder.onnx",       2_092_272),
+    RemoteFile("src/main/assets/sherpa-en/encoder.int8.onnx",  "sherpa-en--encoder.int8.onnx",  42_845_182),
+    RemoteFile("src/main/assets/sherpa-en/joiner.int8.onnx",   "sherpa-en--joiner.int8.onnx",   259_572),
+    RemoteFile("src/main/assets/sherpa-en/tokens.txt",         "sherpa-en--tokens.txt",         5_048),
+    // Bengali Models (sherpa-bn)
+    RemoteFile("src/main/assets/sherpa-bn/decoder.onnx",       "sherpa-bn--decoder.onnx",       2_093_080),
+    RemoteFile("src/main/assets/sherpa-bn/encoder.onnx",       "sherpa-bn--encoder.onnx",       90_994_145),
+    RemoteFile("src/main/assets/sherpa-bn/joiner.onnx",        "sherpa-bn--joiner.onnx",        1_026_462),
+    RemoteFile("src/main/assets/sherpa-bn/tokens.txt",         "sherpa-bn--tokens.txt",         6_252),
 )
 
-tasks.register("downloadSherpaModels") {
+tasks.register("downloadSherpaFiles") {
     group = "setup"
-    description = "Downloads Sherpa-ONNX offline speech models if not already present."
+    description = "Downloads Sherpa-ONNX models and AAR library."
 
-    val assetsDir = file("src/main/assets")
-
-    // Only run if at least one file is missing
     outputs.upToDateWhen {
-        sherpaModels.all { model ->
-            val f = File(assetsDir, "${model.subDir}/${model.name}")
-            f.exists() && f.length() == model.sizeBytes
+        filesToDownload.all { remote ->
+            val f = file(remote.targetPath)
+            f.exists() && f.length() == remote.sizeBytes
         }
     }
 
     doLast {
-        sherpaModels.forEach { model ->
-            val dest = File(assetsDir, "${model.subDir}/${model.name}")
-            if (dest.exists() && dest.length() == model.sizeBytes) {
-                logger.lifecycle(" ${model.subDir}/${model.name} already exists.. skipping.")
+        filesToDownload.forEach { remote ->
+            val dest = file(remote.targetPath)
+            if (dest.exists() && dest.length() == remote.sizeBytes) {
+                logger.lifecycle(" ${dest.name} already exists.. skipping.")
                 return@forEach
             }
             dest.parentFile.mkdirs()
-            val url = "$sherpaRelease/${model.subDir}--${model.name}" // e.g. sherpa-en--decoder.onnx
-            logger.lifecycle(" Downloading ${model.subDir}/${model.name} (${model.sizeBytes / 1_048_576} MB) …")
-            ant.invokeMethod("get", mapOf("src" to url, "dest" to dest, "verbose" to true))
-            // Verify file size
-            check(dest.length() == model.sizeBytes) {
-                "Size mismatch for ${model.name}: expected ${model.sizeBytes}, got ${dest.length()}"
+            val url = "$sherpaRelease/${remote.downloadName}"
+            logger.lifecycle(" Downloading ${dest.name} (${remote.sizeBytes / 1_048_576} MB) …")
+            
+            // Standard Java download to prevent Gradle Configuration Cache crashes
+            java.net.URL(url).openStream().use { input ->
+                java.io.FileOutputStream(dest).use { output ->
+                    input.copyTo(output)
+                }
             }
-            logger.lifecycle(" ${model.subDir}/${model.name} downloaded successfully.")
+            
+            check(dest.length() == remote.sizeBytes) {
+                "Size mismatch for ${remote.downloadName}"
+            }
+            logger.lifecycle(" ${dest.name} downloaded successfully.")
         }
     }
 }
 
-// Hook the download task into the build so it runs automatically
 tasks.matching { it.name == "preBuild" }.configureEach {
-    dependsOn("downloadSherpaModels")
+    dependsOn("downloadSherpaFiles")
 }
 
 android {
@@ -181,6 +186,6 @@ dependencies {
     // JSON parsing
     implementation(libs.gson)
 
-    // Sherpa-ONNX (offline speech recognition) — from Maven Central
-    implementation("com.k2fsa.sherpa.onnx:sherpa-onnx-android:1.10.39")
+    // Sherpa-ONNX (offline speech recognition) - auto-downloaded locally
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
 }

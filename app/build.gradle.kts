@@ -1,3 +1,6 @@
+import java.net.URL
+import java.io.FileOutputStream
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -51,8 +54,8 @@ tasks.register("downloadSherpaFiles") {
             logger.lifecycle(" Downloading ${dest.name} (${remote.sizeBytes / 1_048_576} MB) …")
             
             // Standard Java download to prevent Gradle Configuration Cache crashes
-            java.net.URL(url).openStream().use { input ->
-                java.io.FileOutputStream(dest).use { output ->
+            URL(url).openStream().use { input ->
+                FileOutputStream(dest).use { output ->
                     input.copyTo(output)
                 }
             }

@@ -73,7 +73,7 @@
 ### Setup
 
 ```bash
-git clone https://github.com/your-username/IsharaAI.git
-cd IsharaAI
+git clone https://github.com/iamPulakesh/Ishara.git
+cd Ishara
 ./gradlew installDebug
 ```

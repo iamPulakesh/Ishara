@@ -102,6 +102,8 @@ fun ChatBubble(message: ChatMessage) {
                             lineHeight = 21.sp
                         )
                     }
+                } else if (!isUser) {
+                    InlineTypingDots()
                 }
             }
         }
@@ -113,6 +115,37 @@ fun ChatBubble(message: ChatMessage) {
             color = TextLight,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 1.dp)
         )
+    }
+}
+
+// Inline Typing Dots
+
+@Composable
+fun InlineTypingDots() {
+    val infiniteTransition = rememberInfiniteTransition(label = "inlineTyping")
+
+    Row(
+        modifier = Modifier.padding(horizontal = 18.dp, vertical = 14.dp),
+        horizontalArrangement = Arrangement.spacedBy(5.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        repeat(3) { index ->
+            val alpha by infiniteTransition.animateFloat(
+                initialValue = 0.25f,
+                targetValue = 1f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(500, delayMillis = index * 180),
+                    repeatMode = RepeatMode.Reverse
+                ),
+                label = "inlineDot$index"
+            )
+            Box(
+                modifier = Modifier
+                    .size(9.dp)
+                    .clip(CircleShape)
+                    .background(PrimaryPurple.copy(alpha = alpha))
+            )
+        }
     }
 }
 

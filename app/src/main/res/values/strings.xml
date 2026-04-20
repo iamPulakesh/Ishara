@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">IsharaAI</string>
+    <string name="app_title">Ishara</string>
+
+    <!-- General -->
+    <string name="loading">Loading…</string>
+    <string name="error_generic">Something went wrong. Please try again.</string>
+
+    <!-- Download Screen -->
+    <string name="download_title">AI Model Download</string>
+    <string name="download_body">Download the AI model to start learning sign language (~2.58 GB). Use Wi-Fi.</string>
+    <string name="btn_download_start">Start Download</string>
+    <string name="btn_retry">Try Again</string>
+    <string name="btn_download">Download</string>
+
+    <!-- Video Screen -->
+    <string name="btn_back">Go Back</string>
+    <string name="btn_play_again">Watch Again</string>
+
+    <!-- Camera Screen -->
+    <string name="analyzing">Analyzing…</string>
+    <string name="camera_permission_needed">Camera permission is required.</string>
+
+    <!-- Voice Screen -->
+    <string name="listening">Listening…</string>
+    <string name="mic_start">Start</string>
+    <string name="mic_prompt">Tap the start button</string>
+    <string name="mic_permission_needed">Microphone permission is required.</string>
+    <string name="mic_open_settings">Open Settings</string>
+    <string name="mic_stop">Stop</string>
+
+    <!-- Settings Screen -->
+    <string name="settings">Settings</string>
+    <string name="language">Language</string>
+    <string name="english">English</string>
+    <string name="bengali">বাংলা</string>
+
+    <!-- Chat Screen -->
+    <string name="model_needed">AI Model Needed</string>
+    <string name="model_needed_desc">Download AI model to learn sign language (~2.58 GB)</string>
+    <string name="chat_welcome">Hi! I\'m Ishara 👋\nAsk me anything about Indian Sign Language!</string>
+    <string name="chat_welcome_no_model">Hi! I\'m Ishara 👋\nDownload the AI model to start chatting.</string>
+    <string name="chat_model_needed">Please download the AI model first to start chatting.</string>
+    <string name="chat_hint">Type a message…</string>
+    <string name="chat_error">Sorry, something went wrong. Please try again.</string>
+    <string name="chat_sign_found">I found the ISL sign: %1$s 🤟</string>
+    <string name="chat_sender_you">You</string>
+    <string name="chat_sender_ai">Ishara</string>
+
+    <!-- History Screen -->
+    <string name="history_title">Chat History</string>
+    <string name="history_desc">View and manage past conversations</string>
+    <string name="history_empty">No chat history yet</string>
+    <string name="history_delete_title">Delete Chat</string>
+    <string name="history_delete_confirm">This will permanently delete this chat and all photos in it. Continue?</string>
+    <string name="history_delete_all_title">Delete All Chats</string>
+    <string name="history_delete_all_confirm">This will permanently delete all chats and photos. This cannot be undone.</string>
+    <string name="history_delete_yes">Delete</string>
+</resources>

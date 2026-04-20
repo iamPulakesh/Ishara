@@ -1,0 +1,95 @@
+# Built application files
+*.apk
+*.aar
+*.ap_
+*.aab
+
+# Files for the ART/Dalvik VM
+*.dex
+
+# Java class files
+*.class
+
+# Generated files
+bin/
+gen/
+out/
+build/
+
+# Gradle files adn Kotlin
+.gradle/
+gradle-app.setting
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+.kotlin/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Android Studio captures folder
+captures/
+
+# IntelliJ / Android Studio
+*.iml
+.idea/
+.navigation/
+*.ipr
+*.iws
+
+# Keystore files (don't store secrets in the repo)
+*.jks
+*.keystore
+
+# External native build folder
+.cxx/
+
+# Google Services (Uncomment if using Firebase)
+# google-services.json
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Model files (too large for git — auto-downloaded by Gradle on first build)
+*.litertlm
+*.tflite
+*.onnx
+*.bin
+
+# Sherpa-ONNX offline models (auto-downloaded, not stored in repo)
+app/src/main/assets/sherpa-en/
+app/src/main/assets/sherpa-bn/
+
+# Local libs folder (sherpa-onnx now comes from Maven Central)
+app/libs/
+
+# Logs
+*.log
+*.log.*
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# IDEs
+.vscode/
+
+# NDK / CMake
+.externalNativeBuild/
+cmake-build-debug/
+
+# OS-specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+#others
+app/src/main/res/raw/
+*.mp4

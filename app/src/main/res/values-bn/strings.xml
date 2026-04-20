@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">IsharaAI</string>
+    <string name="app_title">ইশারা</string>
+
+    <!-- General -->
+    <string name="loading">লোড হচ্ছে…</string>
+    <string name="error_generic">কিছু একটা ভুল হয়েছে। আবার চেষ্টা করুন।</string>
+
+    <!-- Download Screen -->
+    <string name="download_title">AI মডেল ডাউনলোড</string>
+    <string name="download_body">প্রথমবার চালু করতে AI মডেল ডাউনলোড করতে হবে (~২.৫৮ GB)। Wi-Fi ব্যবহার করুন।</string>
+    <string name="btn_download_start">ডাউনলোড শুরু করুন</string>
+    <string name="btn_retry">আবার চেষ্টা করুন</string>
+    <string name="btn_download">ডাউনলোড করুন</string>
+
+    <!-- Video Screen -->
+    <string name="btn_back">পিছনে যাও</string>
+    <string name="btn_play_again">আবার দেখো</string>
+
+    <!-- Camera Screen -->
+    <string name="analyzing">বিশ্লেষণ করা হচ্ছে...</string>
+    <string name="camera_permission_needed">ক্যামেরার অনুমতি দিন।</string>
+
+    <!-- Voice Screen -->
+    <string name="listening">শুনছি...</string>
+    <string name="mic_start">শুরু করুন</string>
+    <string name="mic_prompt">মাইক্রোফোন বোতাম চাপুন</string>
+    <string name="mic_permission_needed">মাইক্রোফোনের অনুমতি প্রয়োজন।</string>
+    <string name="mic_open_settings">সেটিংস খুলুন</string>
+    <string name="mic_stop">বন্ধ করুন</string>
+
+    <!-- Settings Screen -->
+    <string name="settings">সেটিংস</string>
+    <string name="language">ভাষা</string>
+    <string name="english">English</string>
+    <string name="bengali">বাংলা</string>
+
+    <!-- Chat Screen -->
+    <string name="model_needed">AI মডেল প্রয়োজন</string>
+    <string name="model_needed_desc">সাইন ভাষা শিখতে AI মডেল ডাউনলোড করুন (~২.৫৮ GB)</string>
+    <string name="chat_welcome">নমস্কার! আমি ইশারা 👋\nভারতীয় সাংকেতিক ভাষা সম্পর্কে যেকোনো প্রশ্ন করুন!</string>
+    <string name="chat_welcome_no_model">নমস্কার! আমি ইশারা 👋\nচ্যাট শুরু করতে AI মডেল ডাউনলোড করুন।</string>
+    <string name="chat_model_needed">চ্যাট শুরু করতে প্রথমে AI মডেল ডাউনলোড করুন।</string>
+    <string name="chat_hint">বার্তা লিখুন…</string>
+    <string name="chat_error">দুঃখিত, আবার চেষ্টা করুন।</string>
+    <string name="chat_sign_found">আমি ISL সাইন পেয়েছি: %1$s 🤟</string>
+    <string name="chat_sender_you">আপনি</string>
+    <string name="chat_sender_ai">ইশারা</string>
+
+    <!-- History Screen -->
+    <string name="history_title">আগের চ্যাট</string>
+    <string name="history_desc">আগের কথোপকথন দেখুন</string>
+    <string name="history_empty">কোনো আগের চ্যাট নেই</string>
+    <string name="history_delete_title">চ্যাট মুছুন</string>
+    <string name="history_delete_confirm">এই চ্যাট এবং এতে থাকা সব বিষয় মুছে যাবে। চালিয়ে যেতে চান?</string>
+    <string name="history_delete_all_title">সব চ্যাট মুছুন</string>
+    <string name="history_delete_all_confirm">সব চ্যাট এবং এতে থাকা সব বিষয় মুছে যাবে। চালিয়ে যেতে চান?</string>
+    <string name="history_delete_yes">মুছুন</string>
+</resources>

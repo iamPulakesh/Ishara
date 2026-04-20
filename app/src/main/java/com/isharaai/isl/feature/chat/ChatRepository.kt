@@ -1,0 +1,65 @@
+package com.isharaai.isl.feature.chat
+
+import com.isharaai.isl.core.db.ChatDao
+import com.isharaai.isl.core.db.ChatMessageEntity
+import com.isharaai.isl.core.db.ChatSessionEntity
+import kotlinx.coroutines.flow.Flow
+import java.io.File
+import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
+class ChatRepository @Inject constructor(
+    private val chatDao: ChatDao
+) {
+
+    // Sessions
+
+    fun getAllSessions(): Flow<List<ChatSessionEntity>> =
+        chatDao.getAllSessions()
+
+    suspend fun getSession(sessionId: String): ChatSessionEntity? =
+        chatDao.getSession(sessionId)
+
+    suspend fun insertSession(session: ChatSessionEntity) =
+        chatDao.insertSession(session)
+
+    suspend fun updateSession(session: ChatSessionEntity) =
+        chatDao.updateSession(session)
+
+    /**
+     * Deletes a session, its messages (via CASCADE) and all associated
+     * image files from disk.
+     */
+    suspend fun deleteSession(sessionId: String) {
+        // Get all image paths before deleting from DB
+        val imagePaths = chatDao.getImagePathsForSession(sessionId)
+
+        // Delete session (messages cascade-deleted)
+        chatDao.deleteSession(sessionId)
+
+        // Delete image files from disk
+        imagePaths.forEach { path ->
+            try { File(path).delete() } catch (_: Exception) { }
+        }
+    }
+
+    suspend fun deleteAllSessions() {
+        val imagePaths = chatDao.getAllImagePaths()
+        chatDao.deleteAllSessions()
+        imagePaths.forEach { path ->
+            try { File(path).delete() } catch (_: Exception) { }
+        }
+    }
+
+    // Messages
+
+    suspend fun getMessagesForSession(sessionId: String): List<ChatMessageEntity> =
+        chatDao.getMessagesForSession(sessionId)
+
+    fun getMessagesForSessionFlow(sessionId: String): Flow<List<ChatMessageEntity>> =
+        chatDao.getMessagesForSessionFlow(sessionId)
+
+    suspend fun insertMessage(message: ChatMessageEntity) =
+        chatDao.insertMessage(message)
+}

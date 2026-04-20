@@ -1,0 +1,14 @@
+[
+  { "signId": "DOG",      "bengaliWord": "কুকুর",    "videoResName": "isl_dog",      "ttsPhrase": "এটি কুকুর। কুকুরের ISL সাইন দেখো।",      "category": "animals" },
+  { "signId": "CAT",      "bengaliWord": "বিড়াল",   "videoResName": "isl_cat",      "ttsPhrase": "এটি বিড়াল। বিড়ালের ISL সাইন দেখো।",      "category": "animals" },
+  { "signId": "WATER",    "bengaliWord": "জল",       "videoResName": "isl_water",    "ttsPhrase": "এটি জল। জলের ISL সাইন দেখো।",              "category": "needs"   },
+  { "signId": "FOOD",     "bengaliWord": "খাবার",    "videoResName": "isl_food",     "ttsPhrase": "এটি খাবার। খাবারের ISL সাইন দেখো।",        "category": "needs"   },
+  { "signId": "MILK",     "bengaliWord": "দুধ",      "videoResName": "isl_milk",     "ttsPhrase": "এটি দুধ। দুধের ISL সাইন দেখো।",            "category": "needs"   },
+  { "signId": "MOTHER",   "bengaliWord": "মা",       "videoResName": "isl_mother",   "ttsPhrase": "এটি মা। মার ISL সাইন দেখো।",               "category": "family"  },
+  { "signId": "FATHER",   "bengaliWord": "বাবা",     "videoResName": "isl_father",   "ttsPhrase": "এটি বাবা। বাবার ISL সাইন দেখো।",           "category": "family"  },
+  { "signId": "HUNGRY",   "bengaliWord": "খিদে",    "videoResName": "isl_hungry",   "ttsPhrase": "এটি খিদে। খিদের ISL সাইন দেখো।",          "category": "needs"   },
+  { "signId": "THIRSTY",  "bengaliWord": "তৃষ্ণা",  "videoResName": "isl_thirsty",  "ttsPhrase": "এটি তৃষ্ণা। তৃষ্ণার ISL সাইন দেখো।",      "category": "needs"   },
+  { "signId": "PAIN",     "bengaliWord": "ব্যথা",   "videoResName": "isl_pain",     "ttsPhrase": "এটি ব্যথা। ব্যথার ISL সাইন দেখো।",         "category": "needs"   },
+  { "signId": "BATHROOM", "bengaliWord": "বাথরুম",  "videoResName": "isl_bathroom", "ttsPhrase": "এটি বাথরুম। বাথরুমের ISL সাইন দেখো।",      "category": "needs"   },
+  { "signId": "HELP",     "bengaliWord": "সাহায্য", "videoResName": "isl_help",     "ttsPhrase": "এটি সাহায্য। সাহায্যের ISL সাইন দেখো।",    "category": "needs"   }
+]

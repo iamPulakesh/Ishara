@@ -8,7 +8,7 @@ plugins {
 
 // Auto-download Sherpa-ONNX offline speech models from GitHub Releases.
 
-val sherpaRelease = "https://github.com/iamPulakesh/Ishara/releases/download/v1.0.0-Sherpa-ONNX-models"
+val sherpaRelease = "https://github.com/iamPulakesh/Ishara/releases/download/Sherpa-ONNX-models"
 
 data class ModelFile(val subDir: String, val name: String, val sizeBytes: Long)
 

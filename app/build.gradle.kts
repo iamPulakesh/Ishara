@@ -1,5 +1,5 @@
-import java.net.URL
 import java.io.FileOutputStream
+import java.net.URI
 
 plugins {
     alias(libs.plugins.android.application)
@@ -35,33 +35,36 @@ tasks.register("downloadSherpaFiles") {
     group = "setup"
     description = "Downloads Sherpa-ONNX models and AAR library."
 
+    // Capture everything into local vals
+    val baseUrl = sherpaRelease
+    val downloads = filesToDownload.map { remote ->
+        Triple(file(remote.targetPath), remote.downloadName, remote.sizeBytes)
+    }
+
     outputs.upToDateWhen {
-        filesToDownload.all { remote ->
-            val f = file(remote.targetPath)
-            f.exists() && f.length() == remote.sizeBytes
+        downloads.all { (dest, _, expectedSize) ->
+            dest.exists() && dest.length() == expectedSize
         }
     }
 
     doLast {
-        filesToDownload.forEach { remote ->
-            val dest = file(remote.targetPath)
-            if (dest.exists() && dest.length() == remote.sizeBytes) {
+        downloads.forEach { (dest, downloadName, expectedSize) ->
+            if (dest.exists() && dest.length() == expectedSize) {
                 logger.lifecycle(" ${dest.name} already exists.. skipping.")
                 return@forEach
             }
             dest.parentFile.mkdirs()
-            val url = "$sherpaRelease/${remote.downloadName}"
-            logger.lifecycle(" Downloading ${dest.name} (${remote.sizeBytes / 1_048_576} MB) …")
-            
-            // Standard Java download to prevent Gradle Configuration Cache crashes
-            URL(url).openStream().use { input ->
+            val url = "$baseUrl/$downloadName"
+            logger.lifecycle(" Downloading ${dest.name} (${expectedSize / 1_048_576} MB)…")
+
+            URI(url).toURL().openStream().use { input: java.io.InputStream ->
                 FileOutputStream(dest).use { output ->
                     input.copyTo(output)
                 }
             }
-            
-            check(dest.length() == remote.sizeBytes) {
-                "Size mismatch for ${remote.downloadName}"
+
+            check(dest.length() == expectedSize) {
+                "Size mismatch for $downloadName: expected $expectedSize, got ${dest.length()}"
             }
             logger.lifecycle(" ${dest.name} downloaded successfully.")
         }

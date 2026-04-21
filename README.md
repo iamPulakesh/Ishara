@@ -1,7 +1,7 @@
 # Ishara
 **An Offline-first, Multimodal AI Indian Sign Language (ISL) Assistant for the Hearing-Impaired Community**
 
-> **Ishara (ইশারা)** means *sign* or *gesture* in Bengali/Hindi language.
+> **Ishara (ইশারা)** is a Bengali word meaning *sign* or *gesture*.
 
 ---
 

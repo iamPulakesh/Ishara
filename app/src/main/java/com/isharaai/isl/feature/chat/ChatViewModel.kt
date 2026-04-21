@@ -293,8 +293,8 @@ class ChatViewModel @Inject constructor(
 
                 // Feed the scaled image directly into the Vision Encoder
                 val prompt = "Identify the main object or action in this image. " +
-                    "If you recognize the object, reply with the ISL sign using this tag format: [[ISL: OBJECT_NAME]]. " +
-                    "If you don't know the exact ISL sign, just give a short natural description of the image."
+                    "Reply ONLY with the exact ISL sign using this tag format: [[ISL: OBJECT_NAME]]. " +
+                    "Do not include any other text, natural description, or explanation."
                 
                 // Use Message.user() with multimodal Contents
                 val multimodalMessage = Message.user(Contents.of(

@@ -120,13 +120,29 @@ fun ISLSignPlayerCard(words: List<String>) {
     val context = LocalContext.current
     var showFullscreen by remember { mutableStateOf(false) }
 
-    // Map each word to its video resource ID
+    // Map each word to its video resource ID, with Fingerspelling Fallback
     val wordVideoMap = remember(words) {
-        words.map { word ->
+        val mapped = mutableListOf<Pair<String, Int>>()
+        for (word in words) {
             val resName = "sign_${word.lowercase()}"
             val resId = context.resources.getIdentifier(resName, "raw", context.packageName)
-            word to resId
+            
+            if (resId != 0) {
+                mapped.add(word to resId)
+            } else {
+                // video not found so break the word into letters
+                for (char in word) {
+                    if (char.isLetterOrDigit()) {
+                        val charResName = "sign_${char.lowercaseChar()}"
+                        val charResId = context.resources.getIdentifier(charResName, "raw", context.packageName)
+                        if (charResId != 0) {
+                            mapped.add(char.uppercase() to charResId)
+                        }
+                    }
+                }
+            }
         }
+        mapped
     }
     // Check if any of the words have corresponding video resources
     val hasAnyVideo = wordVideoMap.any { it.second != 0 }

@@ -2,6 +2,7 @@ package com.isharaai.isl.core.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.*
 import androidx.navigation.compose.*
@@ -91,6 +92,11 @@ fun IsharaAINavGraph() {
         }
 
         composable(Screen.History.route) {
+            // Get the active session ID from ChatViewModel so History can protect it
+            val chatEntry = navController.getBackStackEntry(Screen.Chat.route)
+            val chatViewModel: ChatViewModel = hiltViewModel(chatEntry)
+            val currentSessionId = chatViewModel.uiState.collectAsState().value.sessionId
+
             HistoryScreen(
                 onBack = { navController.popBackStack() },
                 onSessionClick = { sessionId ->
@@ -99,7 +105,8 @@ fun IsharaAINavGraph() {
                         .savedStateHandle
                         .set(SESSION_RESULT_KEY, sessionId)
                     navController.popBackStack(Screen.Chat.route, false)
-                }
+                },
+                currentSessionId = currentSessionId
             )
         }
 

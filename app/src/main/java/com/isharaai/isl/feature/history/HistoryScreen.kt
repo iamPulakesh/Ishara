@@ -1,6 +1,6 @@
 package com.isharaai.isl.feature.history
 
-import androidx.compose.animation.animateColorAsState
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -31,6 +31,7 @@ import com.isharaai.isl.core.theme.*
 fun HistoryScreen(
     onBack: () -> Unit,
     onSessionClick: (String) -> Unit,
+    currentSessionId: String,
     viewModel: HistoryViewModel = hiltViewModel()
 ) {
     val sessions by viewModel.sessions.collectAsState(initial = emptyList())
@@ -104,6 +105,7 @@ fun HistoryScreen(
                 items(sessions, key = { it.id }) { session ->
                     SessionCard(
                         session = session,
+                        isCurrentSession = session.id == currentSessionId,
                         onClick = { onSessionClick(session.id) },
                         onDelete = { sessionToDelete = session }
                     )
@@ -145,7 +147,7 @@ fun HistoryScreen(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        viewModel.deleteAllSessions()
+                        viewModel.deleteAllSessions(currentSessionId)
                         showDeleteAllDialog = false
                     }
                 ) {
@@ -164,6 +166,7 @@ fun HistoryScreen(
 @Composable
 private fun SessionCard(
     session: ChatSessionEntity,
+    isCurrentSession: Boolean,
     onClick: () -> Unit,
     onDelete: () -> Unit
 ) {
@@ -212,14 +215,16 @@ private fun SessionCard(
                 )
             }
 
-            // Delete button
-            IconButton(onClick = onDelete) {
-                Icon(
-                    Icons.Default.Delete,
-                    contentDescription = "Delete",
-                    tint = TextLight,
-                    modifier = Modifier.size(20.dp)
-                )
+            // Hide delete button for the current active session
+            if (!isCurrentSession) {
+                IconButton(onClick = onDelete) {
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = "Delete",
+                        tint = TextLight,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
             }
         }
     }

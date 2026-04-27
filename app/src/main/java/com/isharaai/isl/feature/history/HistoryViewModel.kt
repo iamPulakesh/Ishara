@@ -22,9 +22,10 @@ class HistoryViewModel @Inject constructor(
         }
     }
 
-    fun deleteAllSessions() {
+    /** Deletes all sessions except the currently active one. */
+    fun deleteAllSessions(excludeSessionId: String) {
         viewModelScope.launch {
-            chatRepository.deleteAllSessions()
+            chatRepository.deleteAllSessionsExcept(excludeSessionId)
         }
     }
 }

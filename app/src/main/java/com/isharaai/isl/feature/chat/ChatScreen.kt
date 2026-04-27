@@ -181,15 +181,13 @@ fun ChatScreen(
             isRecording = uiState.isRecording,
             partialTranscript = uiState.partialTranscript,
             isGenerating = uiState.isGenerating,
-            speechLanguage = uiState.speechLanguage,
             onSend = { text ->
                 viewModel.sendMessage(text)
                 inputText = ""
             },
             onAttachClick = { galleryLauncher.launch("image/*") },
             onCameraClick = onCameraClick,
-            onToggleLanguage = { viewModel.toggleSpeechLanguage() },
-            onStartRecording = { viewModel.startRecording() },
+            onStartRecording = { lang -> viewModel.startRecording(lang) },
             onStopRecording = { viewModel.stopRecording() }
         )
     }

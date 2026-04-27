@@ -1,7 +1,6 @@
 package com.isharaai.isl.feature.chat
 
 import android.content.Context
-import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
@@ -12,7 +11,6 @@ import com.google.ai.edge.litertlm.Conversation
 import com.google.ai.edge.litertlm.ConversationConfig
 import com.google.ai.edge.litertlm.Message
 import com.isharaai.isl.R
-import com.isharaai.isl.feature.chat.ChatRepository
 import com.isharaai.isl.core.db.ChatMessageEntity
 import com.isharaai.isl.core.db.ChatSessionEntity
 import com.isharaai.isl.core.inference.LiteRTModelLoader
@@ -48,8 +46,7 @@ data class ChatUiState(
     val isModelReady: Boolean = false,
     val sessionId: String = "",
     val isRecording: Boolean = false,
-    val partialTranscript: String = "",
-    val speechLanguage: SpeechLanguage = SpeechLanguage.BENGALI
+    val partialTranscript: String = ""
 )
 
 @HiltViewModel
@@ -440,7 +437,8 @@ class ChatViewModel @Inject constructor(
         })
     }
 
-    fun startRecording() {
+    fun startRecording(language: SpeechLanguage) {
+        speechManager.language = language
         _uiState.update { it.copy(isRecording = true, partialTranscript = "") }
         speechManager.start()
     }
@@ -451,13 +449,6 @@ class ChatViewModel @Inject constructor(
         if (finalText.isNotBlank()) {
             sendMessage(finalText)
         }
-    }
-
-    fun toggleSpeechLanguage() {
-        val newLang = if (speechManager.language == SpeechLanguage.BENGALI)
-            SpeechLanguage.ENGLISH else SpeechLanguage.BENGALI
-        speechManager.language = newLang
-        _uiState.update { it.copy(speechLanguage = newLang) }
     }
 
     override fun onCleared() {

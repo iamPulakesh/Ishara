@@ -25,7 +25,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.isharaai.isl.R
 import com.isharaai.isl.core.db.ChatSessionEntity
 import com.isharaai.isl.core.theme.*
-import com.isharaai.isl.feature.history.HistoryViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,12 +43,17 @@ fun HistoryScreen(
                 title = {
                     Text(
                         stringResource(R.string.history_title),
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.White
+                        )
                     }
                 },
                 actions = {
@@ -58,13 +62,13 @@ fun HistoryScreen(
                             Icon(
                                 Icons.Default.Delete,
                                 contentDescription = "Delete all",
-                                tint = ErrorRed
+                                tint = Color.White
                             )
                         }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = BackgroundCream
+                    containerColor = Color(0xFF2E7D32)
                 )
             )
         },

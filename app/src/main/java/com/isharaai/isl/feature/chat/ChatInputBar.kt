@@ -29,8 +29,8 @@ import com.isharaai.isl.speech.SpeechLanguage
 import com.isharaai.isl.core.theme.TextLight
 
 /**
- * The chat input bar with text field, gallery attach, camera, language toggle,
- * mic button and send button.
+ * The chat input bar with text field, gallery attach, camera,
+ * mic button (with language picker popup) and send button.
  */
 @Composable
 fun ChatInputBar(
@@ -39,15 +39,14 @@ fun ChatInputBar(
     isRecording: Boolean,
     partialTranscript: String,
     isGenerating: Boolean,
-    speechLanguage: SpeechLanguage,
     onSend: (String) -> Unit,
     onAttachClick: () -> Unit,
     onCameraClick: () -> Unit,
-    onToggleLanguage: () -> Unit,
-    onStartRecording: () -> Unit,
+    onStartRecording: (SpeechLanguage) -> Unit,
     onStopRecording: () -> Unit
 ) {
     val focusManager = LocalFocusManager.current
+    var showLanguagePicker by remember { mutableStateOf(false) }
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -75,7 +74,6 @@ fun ChatInputBar(
                 },
                 leadingIcon = {
                     IconButton(onClick = onAttachClick) {
-                        // attach photo button
                         Icon(
                             imageVector = Icons.Default.Add,
                             contentDescription = "Attach photo",
@@ -85,20 +83,7 @@ fun ChatInputBar(
                 },
                 trailingIcon = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        // Language toggle (EN / বাং)
-                        TextButton(
-                            onClick = onToggleLanguage,
-                            modifier = Modifier.defaultMinSize(minWidth = 36.dp, minHeight = 36.dp),
-                            contentPadding = PaddingValues(horizontal = 4.dp, vertical = 2.dp)
-                        ) {
-                            Text(
-                                text = speechLanguage.label,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFF1B5E20)
-                            )
-                        }
-                        // camera button
+                        // Camera button
                         IconButton(onClick = onCameraClick) {
                             Icon(
                                 imageVector = Icons.Default.PhotoCamera,
@@ -106,17 +91,40 @@ fun ChatInputBar(
                                 tint = Color.DarkGray
                             )
                         }
-                        // mic button
-                        IconButton(
-                            onClick = {
-                                if (isRecording) onStopRecording() else onStartRecording()
+                        // Mic button with language picker popup
+                        Box {
+                            IconButton(
+                                onClick = {
+                                    if (isRecording) onStopRecording()
+                                    else showLanguagePicker = true
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = if (isRecording) Icons.Default.Stop else Icons.Default.Mic,
+                                    contentDescription = if (isRecording) "Stop" else "Voice",
+                                    tint = if (isRecording) Color(0xFFD32F2F) else Color.DarkGray
+                                )
                             }
-                        ) {
-                            Icon(
-                                imageVector = if (isRecording) Icons.Default.Stop else Icons.Default.Mic,
-                                contentDescription = if (isRecording) "Stop" else "Voice",
-                                tint = if (isRecording) Color(0xFFD32F2F) else Color.DarkGray
-                            )
+                            DropdownMenu(
+                                expanded = showLanguagePicker,
+                                onDismissRequest = { showLanguagePicker = false }
+                            ) {
+                                SpeechLanguage.entries.forEach { lang ->
+                                    DropdownMenuItem(
+                                        text = {
+                                            Text(
+                                                text = lang.label,
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 14.sp
+                                            )
+                                        },
+                                        onClick = {
+                                            showLanguagePicker = false
+                                            onStartRecording(lang)
+                                        }
+                                    )
+                                }
+                            }
                         }
                     }
                 },

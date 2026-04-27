@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -86,7 +87,12 @@ fun SettingsScreen(
                             .background(PrimaryPurple.copy(alpha = 0.1f)),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("📋", fontSize = 22.sp)
+                        Icon(
+                            imageVector = Icons.Default.History,
+                            contentDescription = "History",
+                            tint = PrimaryPurple,
+                            modifier = Modifier.size(24.dp)
+                        )
                     }
                     Spacer(modifier = Modifier.width(14.dp))
                     Column(modifier = Modifier.weight(1f)) {

@@ -6,6 +6,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -23,14 +24,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.isharaai.isl.R
-import com.isharaai.isl.feature.chat.ChatBubble
-import com.isharaai.isl.feature.chat.ChatInputBar
 import com.isharaai.isl.core.theme.*
-import com.isharaai.isl.feature.chat.ChatViewModel
 
 @Composable
 fun ChatScreen(
     onSettingsClick: () -> Unit,
+    onGuideClick: () -> Unit,
     onCameraClick: () -> Unit,
     onDownloadClick: () -> Unit,
     viewModel: ChatViewModel = hiltViewModel()
@@ -93,16 +92,22 @@ fun ChatScreen(
                 modifier = Modifier.align(Alignment.CenterStart)
             )
 
-            // Settings button
-            IconButton(
-                onClick = onSettingsClick,
-                modifier = Modifier.align(Alignment.CenterEnd)
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Settings,
-                    contentDescription = "Settings",
-                    tint = Color.White
-                )
+            // Guide & Settings buttons
+            Row(modifier = Modifier.align(Alignment.CenterEnd)) {
+                IconButton(onClick = onGuideClick) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.MenuBook,
+                        contentDescription = "Guide",
+                        tint = Color.White
+                    )
+                }
+                IconButton(onClick = onSettingsClick) {
+                    Icon(
+                        imageVector = Icons.Filled.Settings,
+                        contentDescription = "Settings",
+                        tint = Color.White
+                    )
+                }
             }
         }
 

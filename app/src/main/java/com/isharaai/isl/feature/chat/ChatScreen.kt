@@ -6,7 +6,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -29,7 +28,6 @@ import com.isharaai.isl.core.theme.*
 @Composable
 fun ChatScreen(
     onSettingsClick: () -> Unit,
-    onGuideClick: () -> Unit,
     onCameraClick: () -> Unit,
     onDownloadClick: () -> Unit,
     viewModel: ChatViewModel = hiltViewModel()
@@ -92,15 +90,8 @@ fun ChatScreen(
                 modifier = Modifier.align(Alignment.CenterStart)
             )
 
-            // Guide & Settings buttons
+            // Settings buttons
             Row(modifier = Modifier.align(Alignment.CenterEnd)) {
-                IconButton(onClick = onGuideClick) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.MenuBook,
-                        contentDescription = "Guide",
-                        tint = Color.White
-                    )
-                }
                 IconButton(onClick = onSettingsClick) {
                     Icon(
                         imageVector = Icons.Filled.Settings,

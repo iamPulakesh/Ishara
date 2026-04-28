@@ -57,17 +57,4 @@
     <string name="history_delete_all_title">Delete All Chats</string>
     <string name="history_delete_all_confirm">This will permanently delete all chats and photos. This cannot be undone.</string>
     <string name="history_delete_yes">Delete</string>
-
-    <!-- Guide Screen — Tab Labels -->
-    <string name="guide_title">Guide</string>
-    <string name="guide_tab_intro">Welcome</string>
-    <string name="guide_tab_how_to_use">How to Use</string>
-    <string name="guide_tab_about">About</string>
-
-    <!-- Guide Screen — Page Bodies -->
-    <string name="guide_intro_body">What is ISL?\n\nISL stands for Indian Sign Language.\n\nIt is a language used by deaf and hard-of-hearing people in India. Instead of speaking with your voice, you use your hands, face, and body to talk.\n\nJust like Hindi, Bengali, or English — ISL is a real language with its own words and grammar. Millions of people in India use it every day.\n\n\nWhy is ISL important?\n\nMany deaf children cannot hear spoken words. ISL gives them a way to talk, learn, and share their feelings.\n\n• It helps deaf children communicate with family and friends.\n• It helps parents understand what their child needs.\n• It builds confidence and independence.\n• It connects deaf people with a welcoming community.\n\nLearning even a few signs can make a big difference!\n\n\nISL Grammar Basics\n\nISL grammar is different from English or Hindi. Here is the main rule:\n\nISL uses SOV order — Subject, Object, Verb.\n\nExamples:\n• English: \"I eat food\" → ISL: \"I food eat\"\n• English: \"She drinks water\" → ISL: \"She water drink\"\n• English: \"What is your name?\" → ISL: \"Your name what?\"\n\nDon\'t worry! Ishara automatically converts your sentences into the correct ISL order. Just type normally and we handle the rest.\n\n\nTips for parents\n\nDear parents, here are some simple tips:\n\nLearn together — Practice signs with your child every day, even just 5 minutes.\n\nUse signs at home — Sign while talking (\"eat\", \"water\", \"sleep\"). It helps your child connect words with signs.\n\nBe patient — Learning a new language takes time. Celebrate small wins!\n\nUse this app together — Let your child watch the sign videos and try copying them.\n\nDon\'t give up — Your effort to learn ISL shows your child they are loved and understood.</string>
-
-    <string name="guide_how_to_use_body">How to use Ishara\n\nUsing Ishara is very easy! Here is how:\n\n1.  Type your question in the chat box at the bottom.\n     Example: \"How do I say hello in sign language?\"\n\n2.  Ishara will reply with the answer and show you the sign.\n\n3.  Tap on any sign video to watch and learn the gesture.\n\n4.  You can also use your voice — tap the microphone button and speak.\n\n5.  Use the camera to take a photo of any object — Ishara will tell you how to sign it!\n\nThat\'s it! Just ask, watch, and learn.</string>
-
-    <string name="guide_about_body">About Ishara\n\nIshara (ইশারা) is a Bengali word meaning \"sign\" or \"gesture\".\n\nThis app was created to help deaf and hard-of-hearing people learn and use Indian Sign Language (ISL) with the help of AI — completely offline, right on your phone.\n\n\nYour privacy is safe\n\nIshara cares about your privacy.\n\nEverything happens on your phone — no data is sent to the internet.\n\nWe do not collect your voice, photos, or chats.\n\nThe app works fully offline — no Wi-Fi or mobile data needed after the AI model is downloaded.\n\nYour conversations are private and stay only on your device. Always.</string>
 </resources>

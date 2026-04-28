@@ -11,7 +11,6 @@ import com.isharaai.isl.feature.chat.ChatScreen
 import com.isharaai.isl.feature.chat.ChatViewModel
 import com.isharaai.isl.feature.download.SplashDownloadScreen
 import com.isharaai.isl.feature.history.HistoryScreen
-import com.isharaai.isl.feature.guide.GuideScreen
 import com.isharaai.isl.feature.settings.SettingsScreen
 import com.isharaai.isl.feature.video.ISLVideoScreen
 
@@ -21,7 +20,6 @@ sealed class Screen(val route: String) {
     object Settings : Screen("settings")
     object History  : Screen("history")
     object Camera   : Screen("camera")
-    object Guide    : Screen("guide")
     object Video    : Screen("isl_video/{signId}") {
         fun withSignId(id: String) = "isl_video/$id"
     }
@@ -66,7 +64,6 @@ fun IsharaAINavGraph() {
             ChatScreen(
                 onCameraClick   = { navController.navigate(Screen.Camera.route) },
                 onSettingsClick = { navController.navigate(Screen.Settings.route) },
-                onGuideClick    = { navController.navigate(Screen.Guide.route) },
                 onDownloadClick = { navController.navigate(Screen.Download.route) },
                 viewModel       = chatViewModel
             )
@@ -85,11 +82,6 @@ fun IsharaAINavGraph() {
             )
         }
 
-        composable(Screen.Guide.route) {
-            GuideScreen(
-                onBack = { navController.popBackStack() }
-            )
-        }
 
         composable(Screen.History.route) {
             // Get the active session ID from ChatViewModel so History can protect it

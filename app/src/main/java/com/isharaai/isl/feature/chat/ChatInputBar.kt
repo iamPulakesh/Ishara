@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.PhotoCamera
@@ -151,6 +152,7 @@ fun ChatInputBar(
             val canSend = inputText.isNotBlank() && !isGenerating
             Box(
                 modifier = Modifier
+                    .padding(bottom = 4.dp)
                     .size(48.dp)
                     .clip(CircleShape)
                     .background(
@@ -165,11 +167,11 @@ fun ChatInputBar(
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    "➤",
-                    fontSize = 20.sp,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.Send,
+                    contentDescription = "Send",
+                    tint = Color.White,
+                    modifier = Modifier.size(22.dp)
                 )
             }
         }

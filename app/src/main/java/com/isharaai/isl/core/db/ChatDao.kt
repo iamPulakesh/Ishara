@@ -26,6 +26,9 @@ interface ChatDao {
     @Query("DELETE FROM chat_sessions")
     suspend fun deleteAllSessions()
 
+    @Query("DELETE FROM chat_sessions WHERE id != :excludeId")
+    suspend fun deleteAllSessionsExcept(excludeId: String)
+
     // Messages
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -44,4 +47,8 @@ interface ChatDao {
     /** Get ALL image paths across all sessions */
     @Query("SELECT imagePath FROM chat_messages WHERE imagePath IS NOT NULL")
     suspend fun getAllImagePaths(): List<String>
+
+    /** Get all image paths except those belonging to a specific session */
+    @Query("SELECT imagePath FROM chat_messages WHERE imagePath IS NOT NULL AND sessionId != :excludeId")
+    suspend fun getAllImagePathsExcept(excludeId: String): List<String>
 }

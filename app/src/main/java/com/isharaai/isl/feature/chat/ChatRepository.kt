@@ -52,6 +52,15 @@ class ChatRepository @Inject constructor(
         }
     }
 
+    /** Deletes all sessions except the current session. */
+    suspend fun deleteAllSessionsExcept(excludeId: String) {
+        val imagePaths = chatDao.getAllImagePathsExcept(excludeId)
+        chatDao.deleteAllSessionsExcept(excludeId)
+        imagePaths.forEach { path ->
+            try { File(path).delete() } catch (_: Exception) { }
+        }
+    }
+
     // Messages
 
     suspend fun getMessagesForSession(sessionId: String): List<ChatMessageEntity> =

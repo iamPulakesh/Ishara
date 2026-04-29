@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import com.isharaai.isl.R
 import com.isharaai.isl.speech.SpeechLanguage
 import com.isharaai.isl.core.theme.TextLight
+import com.isharaai.isl.feature.onboarding.registerTarget
 
 /**
  * The chat input bar with text field, gallery attach, camera,
@@ -64,7 +66,7 @@ fun ChatInputBar(
             OutlinedTextField(
                 value = if (isRecording) partialTranscript else inputText,
                 onValueChange = { if (!isRecording) onInputChange(it) },
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).onGloballyPositioned { registerTarget("chat_input", it) },
                 readOnly = isRecording,
                 placeholder = {
                     Text(
@@ -74,7 +76,10 @@ fun ChatInputBar(
                     )
                 },
                 leadingIcon = {
-                    IconButton(onClick = onAttachClick) {
+                    IconButton(
+                        onClick = onAttachClick,
+                        modifier = Modifier.onGloballyPositioned { registerTarget("attach_btn", it) }
+                    ) {
                         Icon(
                             imageVector = Icons.Default.Add,
                             contentDescription = "Attach photo",
@@ -85,7 +90,10 @@ fun ChatInputBar(
                 trailingIcon = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         // Camera button
-                        IconButton(onClick = onCameraClick) {
+                        IconButton(
+                            onClick = onCameraClick,
+                            modifier = Modifier.onGloballyPositioned { registerTarget("camera_btn", it) }
+                        ) {
                             Icon(
                                 imageVector = Icons.Default.PhotoCamera,
                                 contentDescription = "Camera",
@@ -98,7 +106,8 @@ fun ChatInputBar(
                                 onClick = {
                                     if (isRecording) onStopRecording()
                                     else showLanguagePicker = true
-                                }
+                                },
+                                modifier = Modifier.onGloballyPositioned { registerTarget("mic_btn", it) }
                             ) {
                                 Icon(
                                     imageVector = if (isRecording) Icons.Default.Stop else Icons.Default.Mic,
@@ -164,7 +173,8 @@ fun ChatInputBar(
                             onSend(inputText)
                             focusManager.clearFocus()
                         } else Modifier
-                    ),
+                    )
+                    .onGloballyPositioned { registerTarget("send_btn", it) },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(

@@ -2,6 +2,7 @@ package com.isharaai.isl.feature.chat
 
 import android.net.Uri
 import android.util.Log
+import java.io.File
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -19,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -27,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.isharaai.isl.R
 import com.isharaai.isl.core.theme.*
+import com.isharaai.isl.feature.onboarding.registerTarget
 
 @Composable
 fun ChatScreen(
@@ -49,7 +52,7 @@ fun ChatScreen(
             // Copy picked image to internal storage and send to chat
             try {
                 val inputStream = context.contentResolver.openInputStream(it)
-                val file = java.io.File(context.filesDir, "gallery_${System.currentTimeMillis()}.jpg")
+                val file = File(context.filesDir, "gallery_${System.currentTimeMillis()}.jpg")
                 inputStream?.use { input ->
                     file.outputStream().use { output ->
                         input.copyTo(output)
@@ -96,14 +99,20 @@ fun ChatScreen(
 
             // New Chat + Settings buttons
             Row(modifier = Modifier.align(Alignment.CenterEnd)) {
-                IconButton(onClick = { showNewChatDialog = true }) {
+                IconButton(
+                    onClick = { showNewChatDialog = true },
+                    modifier = Modifier.onGloballyPositioned { registerTarget("new_chat_btn", it) }
+                ) {
                     Icon(
                         imageVector = Icons.Filled.Add,
                         contentDescription = "New Chat",
                         tint = Color.White
                     )
                 }
-                IconButton(onClick = onSettingsClick) {
+                IconButton(
+                    onClick = onSettingsClick,
+                    modifier = Modifier.onGloballyPositioned { registerTarget("settings_btn", it) }
+                ) {
                     Icon(
                         imageVector = Icons.Filled.Settings,
                         contentDescription = "Settings",

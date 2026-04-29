@@ -1,8 +1,7 @@
 package com.isharaai.isl.core.navigation
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.*
 import androidx.navigation.compose.*
@@ -11,10 +10,16 @@ import com.isharaai.isl.feature.chat.ChatScreen
 import com.isharaai.isl.feature.chat.ChatViewModel
 import com.isharaai.isl.feature.download.SplashDownloadScreen
 import com.isharaai.isl.feature.history.HistoryScreen
+import com.isharaai.isl.feature.onboarding.OnboardingScreen
+import com.isharaai.isl.feature.onboarding.TutorialOverlay
+import com.isharaai.isl.feature.onboarding.isOnboardingCompleted
+import com.isharaai.isl.feature.onboarding.isTutorialPending
+import com.isharaai.isl.feature.onboarding.setTutorialPending
 import com.isharaai.isl.feature.settings.SettingsScreen
 import com.isharaai.isl.feature.video.ISLVideoScreen
 
 sealed class Screen(val route: String) {
+    object Onboarding : Screen("onboarding")
     object Chat     : Screen("chat")
     object Download : Screen("download")
     object Settings : Screen("settings")
@@ -31,9 +36,24 @@ const val SESSION_RESULT_KEY = "load_session_id"
 
 @Composable
 fun IsharaAINavGraph() {
+    val context = LocalContext.current
     val navController = rememberNavController()
+    var showTutorial by remember { mutableStateOf(isTutorialPending(context)) }
 
-    NavHost(navController = navController, startDestination = Screen.Chat.route) {
+    val startDest = if (isOnboardingCompleted(context)) Screen.Chat.route else Screen.Onboarding.route
+
+    NavHost(navController = navController, startDestination = startDest) {
+
+        composable(Screen.Onboarding.route) {
+            OnboardingScreen(
+                onComplete = { wantsTutorial ->
+                    showTutorial = wantsTutorial
+                    navController.navigate(Screen.Chat.route) {
+                        popUpTo(Screen.Onboarding.route) { inclusive = true }
+                    }
+                }
+            )
+        }
 
         composable(Screen.Chat.route) { backStackEntry ->
             val savedStateHandle = backStackEntry.savedStateHandle
@@ -67,6 +87,11 @@ fun IsharaAINavGraph() {
                 onDownloadClick = { navController.navigate(Screen.Download.route) },
                 viewModel       = chatViewModel
             )
+
+            // Tutorial overlay on top of ChatScreen
+            if (showTutorial) {
+                TutorialOverlay(onFinish = { setTutorialPending(context, false); showTutorial = false })
+            }
         }
 
         composable(Screen.Download.route) {
@@ -78,10 +103,14 @@ fun IsharaAINavGraph() {
         composable(Screen.Settings.route) {
             SettingsScreen(
                 onBack = { navController.popBackStack() },
-                onHistoryClick = { navController.navigate(Screen.History.route) }
+                onHistoryClick = { navController.navigate(Screen.History.route) },
+                onReplayTutorial = {
+                    setTutorialPending(context, true)
+                    showTutorial = true
+                    navController.popBackStack()
+                }
             )
         }
-
 
         composable(Screen.History.route) {
             // Get the active session ID from ChatViewModel so History can protect it

@@ -57,4 +57,10 @@
     <string name="history_delete_all_title">Delete All Chats</string>
     <string name="history_delete_all_confirm">This will permanently delete all chats and photos. This cannot be undone.</string>
     <string name="history_delete_yes">Delete</string>
+
+    <!-- New Chat Dialog -->
+    <string name="new_chat_title">New Chat</string>
+    <string name="new_chat_default">New Chat</string>
+    <string name="new_chat_ok">OK</string>
+    <string name="new_chat_cancel">Cancel</string>
 </resources>

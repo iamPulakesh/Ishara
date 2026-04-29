@@ -1,11 +1,13 @@
 package com.isharaai.isl.feature.chat
 
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -34,8 +37,9 @@ fun ChatScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var inputText by remember { mutableStateOf("") }
+    var showNewChatDialog by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
-    val context = androidx.compose.ui.platform.LocalContext.current
+    val context = LocalContext.current
 
     // Gallery photo picker
     val galleryLauncher = rememberLauncherForActivityResult(
@@ -53,7 +57,7 @@ fun ChatScreen(
                 }
                 viewModel.sendImage(file.absolutePath)
             } catch (e: Exception) {
-                android.util.Log.e("ChatScreen", "Failed to load gallery image", e)
+                Log.e("ChatScreen", "Failed to load gallery image", e)
             }
         }
     }
@@ -90,8 +94,15 @@ fun ChatScreen(
                 modifier = Modifier.align(Alignment.CenterStart)
             )
 
-            // Settings buttons
+            // New Chat + Settings buttons
             Row(modifier = Modifier.align(Alignment.CenterEnd)) {
+                IconButton(onClick = { showNewChatDialog = true }) {
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = "New Chat",
+                        tint = Color.White
+                    )
+                }
                 IconButton(onClick = onSettingsClick) {
                     Icon(
                         imageVector = Icons.Filled.Settings,
@@ -180,6 +191,17 @@ fun ChatScreen(
             onCameraClick = onCameraClick,
             onStartRecording = { lang -> viewModel.startRecording(lang) },
             onStopRecording = { viewModel.stopRecording() }
+        )
+    }
+
+    // New Chat name dialog
+    if (showNewChatDialog) {
+        NewChatDialog(
+            onDismiss = { showNewChatDialog = false },
+            onConfirm = { name ->
+                showNewChatDialog = false
+                viewModel.startNewSession(name)
+            }
         )
     }
 }

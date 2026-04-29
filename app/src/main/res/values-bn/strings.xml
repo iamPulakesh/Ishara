@@ -57,4 +57,10 @@
     <string name="history_delete_all_title">সব চ্যাট মুছুন</string>
     <string name="history_delete_all_confirm">সব চ্যাট এবং এতে থাকা সব বিষয় মুছে যাবে। চালিয়ে যেতে চান?</string>
     <string name="history_delete_yes">মুছুন</string>
+
+    <!-- New Chat Dialog -->
+    <string name="new_chat_title">নতুন চ্যাট</string>
+    <string name="new_chat_default">নতুন চ্যাট</string>
+    <string name="new_chat_ok">ঠিক আছে</string>
+    <string name="new_chat_cancel">বাতিল</string>
 </resources>

@@ -1,6 +1,8 @@
 package com.isharaai.isl.feature.chat
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
@@ -19,35 +21,15 @@ import com.isharaai.isl.speech.HybridSpeechManager
 import com.isharaai.isl.speech.SpeechLanguage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
 import java.util.UUID
 import javax.inject.Inject
-
-/**
- * A chat message. System/AI messages may use [stringResId] instead of [text]
- * so the displayed text is always in the current locale.
- * Image messages use [imagePath] to display a captured photo.
- */
-data class ChatMessage(
-    val id: String = UUID.randomUUID().toString(),
-    val text: String = "",
-    @StringRes val stringResId: Int = 0,
-    val imagePath: String? = null,
-    val isUser: Boolean,
-    val timestamp: Long = System.currentTimeMillis()
-)
-
-data class ChatUiState(
-    val messages: List<ChatMessage> = emptyList(),
-    val isGenerating: Boolean = false,
-    val isModelReady: Boolean = false,
-    val sessionId: String = "",
-    val isRecording: Boolean = false,
-    val partialTranscript: String = ""
-)
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(
@@ -97,7 +79,7 @@ class ChatViewModel @Inject constructor(
     }
 
     // Creates a new chat session 
-    fun startNewSession() {
+    fun startNewSession(title: String = "New Chat") {
         val sessionId = UUID.randomUUID().toString()
         val now = System.currentTimeMillis()
 
@@ -113,7 +95,7 @@ class ChatViewModel @Inject constructor(
             chatRepository.insertSession(
                 ChatSessionEntity(
                     id = sessionId,
-                    title = "New Chat",
+                    title = title.ifBlank { "New Chat" },
                     createdAt = now,
                     updatedAt = now
                 )
@@ -160,214 +142,83 @@ class ChatViewModel @Inject constructor(
 
     fun sendMessage(text: String) {
         if (text.isBlank()) return
-
         addUserMessage(text.trim())
         updateSessionTitle(text.trim())
-
-        if (!_uiState.value.isModelReady) {
-            addSystemMessage(R.string.chat_model_needed)
-            return
-        }
-
-        // Create a placeholder AI message that will be streamed into
-        val streamingMsgId = UUID.randomUUID().toString()
-        val placeholderMsg = ChatMessage(id = streamingMsgId, text = "", isUser = false)
-        _uiState.update { it.copy(messages = it.messages + placeholderMsg, isGenerating = true) }
-
-        viewModelScope.launch(kotlinx.coroutines.Dispatchers.Default) {
-            try {
-                if (conversation == null) {
-                    val engine = LiteRTModelLoader.getOrLoad(context)
-                    val config = ConversationConfig(
-                        systemInstruction = Contents.of(ISL_SYSTEM_PROMPT)
-                    )
-                    conversation = engine.createConversation(config)
-                }
-
-                val inputMsg = Message.user(text.trim())
-                val accumulated = StringBuilder()
-
-                // Stream tokens as they are generated
-                conversation!!.sendMessageAsync(inputMsg).collect { partialMessage ->
-                    val delta = partialMessage.contents.contents.joinToString("") { part ->
-                        when (part) {
-                            is Content.Text -> part.text
-                            else -> ""
-                        }
-                    }
-                    accumulated.append(delta)
-
-                    // Update the placeholder message with accumulated text
-                    val currentText = accumulated.toString()
-                    kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
-                        _uiState.update { state ->
-                            state.copy(
-                                messages = state.messages.map { msg ->
-                                    if (msg.id == streamingMsgId) msg.copy(text = currentText) else msg
-                                }
-                            )
-                        }
-                    }
-                }
-
-                // Persist the final complete message
-                val finalText = accumulated.toString().ifBlank { "..." }
-                kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
-                    _uiState.update { state ->
-                        state.copy(
-                            messages = state.messages.map { msg ->
-                                if (msg.id == streamingMsgId) msg.copy(text = finalText) else msg
-                            }
-                        )
-                    }
-                    persistMessage(ChatMessage(id = streamingMsgId, text = finalText, isUser = false))
-                }
-            } catch (e: Exception) {
-                Log.e("ChatViewModel", "Inference failed", e)
-                kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
-                    // Remove the empty placeholder and show error
-                    _uiState.update { state ->
-                        state.copy(messages = state.messages.filter { it.id != streamingMsgId })
-                    }
-                    addSystemMessage(R.string.chat_error)
-                }
-            } finally {
-                kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
-                    _uiState.update { it.copy(isGenerating = false) }
-                }
-            }
-        }
+        if (!_uiState.value.isModelReady) { addSystemMessage(R.string.chat_model_needed); return }
+        streamAiResponse(Message.user(text.trim()))
     }
 
-    // Send a captured photo to the chat and process with AI
     fun sendImage(imagePath: String) {
         val msg = ChatMessage(imagePath = imagePath, isUser = true)
         _uiState.update { it.copy(messages = it.messages + msg) }
         persistMessage(msg)
+        if (!_uiState.value.isModelReady) { addSystemMessage(R.string.chat_model_needed); return }
 
-        if (!_uiState.value.isModelReady) {
-            addSystemMessage(R.string.chat_model_needed)
-            return
-        }
+        val scaledBytes = scaleImageToBytes(imagePath)
+        val prompt = "Identify the main object or action in this image. " +
+            "Reply ONLY with the exact ISL sign using this tag format: [[ISL: OBJECT_NAME]]. " +
+            "Do not include any other text, natural description, or explanation."
+        streamAiResponse(Message.user(Contents.of(Content.ImageBytes(scaledBytes), Content.Text(prompt))))
+    }
 
-        // Create a placeholder AI message that will be streamed into
-        val streamingMsgId = UUID.randomUUID().toString()
-        val placeholderMsg = ChatMessage(id = streamingMsgId, text = "", isUser = false)
-        _uiState.update { it.copy(messages = it.messages + placeholderMsg, isGenerating = true) }
+    // Shared streaming helper 
 
-        viewModelScope.launch(kotlinx.coroutines.Dispatchers.Default) {
+    private suspend fun ensureConversation(): Conversation {
+        return conversation ?: LiteRTModelLoader.getOrLoad(context)
+            .createConversation(ConversationConfig(systemInstruction = Contents.of(ISL_SYSTEM_PROMPT)))
+            .also { conversation = it }
+    }
+
+    private fun streamAiResponse(inputMessage: Message) {
+        val msgId = UUID.randomUUID().toString()
+        _uiState.update { it.copy(messages = it.messages + ChatMessage(id = msgId, text = "", isUser = false), isGenerating = true) }
+
+        viewModelScope.launch(Dispatchers.Default) {
             try {
-                // Ensure conversation exists with ISL system prompt
-                if (conversation == null) {
-                    val engine = LiteRTModelLoader.getOrLoad(context)
-                    val config = ConversationConfig(
-                        systemInstruction = Contents.of(ISL_SYSTEM_PROMPT)
-                    )
-                    conversation = engine.createConversation(config)
-                }
+                val conv = ensureConversation()
+                val buf = StringBuilder()
 
-                // Scale Down Images Before Native Inference because
-                // Raw Android camera images can cause native SEGV_MAPERR OOM crashes 
-                // in LiteRT.
-                val originalBitmap = android.graphics.BitmapFactory.decodeFile(imagePath)
-                    ?: throw IllegalStateException("Failed to decode image from path")
-                
-                val maxDim = 768
-                val scale = maxDim.toFloat() / maxOf(originalBitmap.width, originalBitmap.height)
-                val scaledBitmap = if (scale < 1.0f) {
-                    android.graphics.Bitmap.createScaledBitmap(
-                        originalBitmap, 
-                        (originalBitmap.width * scale).toInt(), 
-                        (originalBitmap.height * scale).toInt(), 
-                        true
-                    )
-                } else originalBitmap
-                
-                // Convert to JPEG bytes for the Vision Encoder
-                val stream = java.io.ByteArrayOutputStream()
-                scaledBitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 90, stream)
-                val scaledBytes = stream.toByteArray()
-                
-                // Recycle bitmaps to free memory
-                if (scaledBitmap != originalBitmap) originalBitmap.recycle()
-                scaledBitmap.recycle()
-
-                // Feed the scaled image directly into the Vision Encoder
-                val prompt = "Identify the main object or action in this image. " +
-                    "Reply ONLY with the exact ISL sign using this tag format: [[ISL: OBJECT_NAME]]. " +
-                    "Do not include any other text, natural description, or explanation."
-                
-                // Use Message.user() with multimodal Contents
-                val multimodalMessage = Message.user(Contents.of(
-                    Content.ImageBytes(scaledBytes),
-                    Content.Text(prompt)
-                ))
-
-                val accumulated = StringBuilder()
-
-                // Stream tokens as they are generated
-                conversation!!.sendMessageAsync(multimodalMessage).collect { partialMessage ->
-                    val delta = partialMessage.contents.contents.joinToString("") { part ->
-                        when (part) {
-                            is Content.Text -> part.text
-                            else -> ""
-                        }
-                    }
-                    accumulated.append(delta)
-
-                    val currentText = accumulated.toString()
-                    kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
-                        _uiState.update { state ->
-                            state.copy(
-                                messages = state.messages.map { msg ->
-                                    if (msg.id == streamingMsgId) msg.copy(text = currentText) else msg
-                                }
-                            )
-                        }
+                conv.sendMessageAsync(inputMessage).collect { partial ->
+                    buf.append(partial.contents.contents.filterIsInstance<Content.Text>().joinToString("") { it.text })
+                    val snap = buf.toString()
+                    withContext(Dispatchers.Main) {
+                        _uiState.update { s -> s.copy(messages = s.messages.map { if (it.id == msgId) it.copy(text = snap) else it }) }
                     }
                 }
 
-                // Persist the final complete message
-                val finalText = accumulated.toString().ifBlank { "..." }
-                kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
-                    _uiState.update { state ->
-                        state.copy(
-                            messages = state.messages.map { msg ->
-                                if (msg.id == streamingMsgId) msg.copy(text = finalText) else msg
-                            }
-                        )
-                    }
-                    persistMessage(ChatMessage(id = streamingMsgId, text = finalText, isUser = false))
+                val finalText = buf.toString().ifBlank { "..." }
+                withContext(Dispatchers.Main) {
+                    _uiState.update { s -> s.copy(messages = s.messages.map { if (it.id == msgId) it.copy(text = finalText) else it }) }
+                    persistMessage(ChatMessage(id = msgId, text = finalText, isUser = false))
                 }
             } catch (e: Exception) {
-            
-                Log.e(TAG, "Image inference failed natively", e)
-                kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
-                    // Remove the empty placeholder and show error
-                    _uiState.update { state ->
-                        state.copy(messages = state.messages.filter { it.id != streamingMsgId })
-                    }
+                Log.e(TAG, "Inference failed", e)
+                withContext(Dispatchers.Main) {
+                    _uiState.update { s -> s.copy(messages = s.messages.filter { it.id != msgId }) }
                     addSystemMessage(R.string.chat_error)
                 }
             } finally {
-                kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
-                    _uiState.update { it.copy(isGenerating = false) }
-                }
+                withContext(Dispatchers.Main) { _uiState.update { it.copy(isGenerating = false) } }
             }
         }
     }
 
-    // Private helpers to add messages to the chat
+    // Scale camera images to avoid native OOM crashes in LiteRT
+    private fun scaleImageToBytes(path: String): ByteArray {
+        val original = BitmapFactory.decodeFile(path) ?: throw IllegalStateException("Failed to decode image")
+        val maxDim = 768
+        val scale = maxDim.toFloat() / maxOf(original.width, original.height)
+        val scaled = if (scale < 1f) Bitmap.createScaledBitmap(original, (original.width * scale).toInt(), (original.height * scale).toInt(), true) else original
+        val out = ByteArrayOutputStream()
+        scaled.compress(Bitmap.CompressFormat.JPEG, 90, out)
+        val bytes = out.toByteArray()
+        if (scaled !== original) original.recycle()
+        scaled.recycle()
+        return bytes
+    }
 
     private fun addUserMessage(text: String) {
         val msg = ChatMessage(text = text, isUser = true)
-        _uiState.update { it.copy(messages = it.messages + msg) }
-        persistMessage(msg)
-    }
-
-    // AI response with literal text (model output - not localized) 
-    private fun addAiMessage(text: String) {
-        val msg = ChatMessage(text = text, isUser = false)
         _uiState.update { it.copy(messages = it.messages + msg) }
         persistMessage(msg)
     }

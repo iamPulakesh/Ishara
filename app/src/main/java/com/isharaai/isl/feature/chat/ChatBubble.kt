@@ -1,6 +1,9 @@
 package com.isharaai.isl.feature.chat
 
 import android.graphics.BitmapFactory
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.isharaai.isl.R
 import com.isharaai.isl.core.theme.*
-import com.isharaai.isl.feature.chat.ChatMessage
+import com.isharaai.isl.feature.chat.isl.ISLMessageContent
 
 // Chat Bubble
 
@@ -149,61 +152,9 @@ fun InlineTypingDots() {
     }
 }
 
-// Typing Indicator
-
-@Composable
-fun TypingIndicator() {
-    val infiniteTransition = rememberInfiniteTransition(label = "typing")
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 2.dp),
-        horizontalAlignment = Alignment.Start
-    ) {
-        Text(
-            text = stringResource(R.string.chat_sender_ai),
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 1.dp),
-            fontSize = 11.sp,
-            fontWeight = FontWeight.Medium,
-            color = PrimaryPink.copy(alpha = 0.7f)
-        )
-
-        Card(
-            shape = RoundedCornerShape(16.dp, 16.dp, 16.dp, 4.dp),
-            colors = CardDefaults.cardColors(containerColor = CardWhite),
-            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
-        ) {
-            Row(
-                modifier = Modifier.padding(horizontal = 18.dp, vertical = 14.dp),
-                horizontalArrangement = Arrangement.spacedBy(5.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                repeat(3) { index ->
-                    val alpha by infiniteTransition.animateFloat(
-                        initialValue = 0.25f,
-                        targetValue = 1f,
-                        animationSpec = infiniteRepeatable(
-                            animation = tween(500, delayMillis = index * 180),
-                            repeatMode = RepeatMode.Reverse
-                        ),
-                        label = "dot$index"
-                    )
-                    Box(
-                        modifier = Modifier
-                            .size(9.dp)
-                            .clip(CircleShape)
-                            .background(PrimaryPurple.copy(alpha = alpha))
-                    )
-                }
-            }
-        }
-    }
-}
-
 // Helpers for chat bubble
 
 fun formatTime(timestamp: Long): String {
-    val sdf = java.text.SimpleDateFormat("hh:mm a", java.util.Locale.getDefault())
-    return sdf.format(java.util.Date(timestamp))
+    val sdf = SimpleDateFormat("hh:mm a", Locale.getDefault())
+    return sdf.format(Date(timestamp))
 }

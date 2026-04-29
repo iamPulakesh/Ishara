@@ -29,6 +29,11 @@ object LanguageManager {
         AppCompatDelegate.setApplicationLocales(localeList)
     }
 
+    /** Save preference only — no Activity recreation. Use during onboarding. */
+    fun saveLanguageOnly(context: Context, langCode: String) {
+        prefs(context).edit().putString(KEY_LANGUAGE, langCode).apply()
+    }
+
     /** Call from Application.onCreate() to restore saved language */
     fun applyStoredLanguage(context: Context) {
         val lang = getCurrentLanguage(context)

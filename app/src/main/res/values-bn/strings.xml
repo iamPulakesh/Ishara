@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">IsharaAI</string>
+    <string name="app_name">Ishara</string>
     <string name="app_title">ইশারা</string>
 
     <!-- General -->
@@ -40,11 +40,11 @@
     <string name="model_needed">AI মডেল প্রয়োজন</string>
     <string name="model_needed_desc">সাইন ভাষা শিখতে AI মডেল ডাউনলোড করুন (~২.৫৮ GB)</string>
     <string name="chat_welcome">নমস্কার! আমি ইশারা 👋\nভারতীয় সাংকেতিক ভাষা সম্পর্কে যেকোনো প্রশ্ন করুন!</string>
-    <string name="chat_welcome_no_model">নমস্কার! আমি ইশারা 👋\nচ্যাট শুরু করতে AI মডেল ডাউনলোড করুন।</string>
+    <string name="chat_welcome_no_model">নমস্কার! আমি ইশারা \nচ্যাট শুরু করতে AI মডেল ডাউনলোড করুন।</string>
     <string name="chat_model_needed">চ্যাট শুরু করতে প্রথমে AI মডেল ডাউনলোড করুন।</string>
     <string name="chat_hint">বার্তা লিখুন…</string>
     <string name="chat_error">দুঃখিত, আবার চেষ্টা করুন।</string>
-    <string name="chat_sign_found">আমি ISL সাইন পেয়েছি: %1$s 🤟</string>
+    <string name="chat_sign_found">আমি ISL সাইন পেয়েছি: %1$s </string>
     <string name="chat_sender_you">আপনি</string>
     <string name="chat_sender_ai">ইশারা</string>
 
@@ -63,4 +63,8 @@
     <string name="new_chat_default">নতুন চ্যাট</string>
     <string name="new_chat_ok">ঠিক আছে</string>
     <string name="new_chat_cancel">বাতিল</string>
+
+    <!-- Tutorial -->
+    <string name="tutorial_replay">টিউটোরিয়াল দেখুন</string>
+    <string name="tutorial_replay_desc">অ্যাপটি কীভাবে ব্যবহার করবেন তা জানুন</string>
 </resources>

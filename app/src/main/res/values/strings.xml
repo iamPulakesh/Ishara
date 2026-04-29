@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">IsharaAI</string>
+    <string name="app_name">Ishara</string>
     <string name="app_title">Ishara</string>
 
     <!-- General -->
@@ -40,11 +40,11 @@
     <string name="model_needed">AI Model Needed</string>
     <string name="model_needed_desc">Download AI model to learn sign language (~2.58 GB)</string>
     <string name="chat_welcome">Hi! I\'m Ishara 👋\nAsk me anything about Indian Sign Language!</string>
-    <string name="chat_welcome_no_model">Hi! I\'m Ishara 👋\nDownload the AI model to start chatting.</string>
+    <string name="chat_welcome_no_model">Hi! I\'m Ishara \nDownload the AI model to start chatting.</string>
     <string name="chat_model_needed">Please download the AI model first to start chatting.</string>
     <string name="chat_hint">Type a message…</string>
     <string name="chat_error">Sorry, something went wrong. Please try again.</string>
-    <string name="chat_sign_found">I found the ISL sign: %1$s 🤟</string>
+    <string name="chat_sign_found">I found the ISL sign: %1$s </string>
     <string name="chat_sender_you">You</string>
     <string name="chat_sender_ai">Ishara</string>
 
@@ -63,4 +63,8 @@
     <string name="new_chat_default">New Chat</string>
     <string name="new_chat_ok">OK</string>
     <string name="new_chat_cancel">Cancel</string>
+
+    <!-- Tutorial -->
+    <string name="tutorial_replay">Tutorial</string>
+    <string name="tutorial_replay_desc">Learn how to use the app</string>
 </resources>

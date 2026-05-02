@@ -76,6 +76,15 @@ class ChatViewModel @Inject constructor(
     init {
         startNewSession()
         refreshModelStatus()
+        preloadEngine()
+    }
+
+    // Pre-load the engine in the background so the first prompt is faster.
+    private fun preloadEngine() {
+        if (!ModelDownloadManager.isModelReady(context)) return
+        viewModelScope.launch {
+            try { ensureConversation() } catch (_: Exception) { }
+        }
     }
 
     // Creates a new chat session 
@@ -207,7 +216,7 @@ class ChatViewModel @Inject constructor(
     private fun scaleImageToBytes(path: String): ByteArray {
         val original = BitmapFactory.decodeFile(path) ?: throw IllegalStateException("Failed to decode image")
         try {
-            val maxDim = 768
+            val maxDim = 384
             val scale = maxDim.toFloat() / maxOf(original.width, original.height)
 
             // No scaling needed — compress original directly

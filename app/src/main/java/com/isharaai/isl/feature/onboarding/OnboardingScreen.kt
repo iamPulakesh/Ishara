@@ -29,9 +29,6 @@ fun isOnboardingCompleted(context: Context): Boolean =
 fun setOnboardingCompleted(context: Context) =
     context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE).edit().putBoolean(KEY_COMPLETED, true).apply()
 
-fun resetOnboarding(context: Context) =
-    context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE).edit().putBoolean(KEY_COMPLETED, false).putBoolean(KEY_TUTORIAL_PENDING, false).apply()
-
 fun isTutorialPending(context: Context): Boolean =
     context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE).getBoolean(KEY_TUTORIAL_PENDING, false)
 

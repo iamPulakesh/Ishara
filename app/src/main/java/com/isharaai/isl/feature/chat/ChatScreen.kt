@@ -3,6 +3,9 @@ package com.isharaai.isl.feature.chat
 import android.net.Uri
 import android.util.Log
 import java.io.File
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -45,22 +48,27 @@ fun ChatScreen(
     val context = LocalContext.current
 
     // Gallery photo picker
+    val scope = rememberCoroutineScope()
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let {
-            // Copy picked image to internal storage and send to chat
-            try {
-                val inputStream = context.contentResolver.openInputStream(it)
-                val file = File(context.filesDir, "gallery_${System.currentTimeMillis()}.jpg")
-                inputStream?.use { input ->
-                    file.outputStream().use { output ->
-                        input.copyTo(output)
+            scope.launch {
+                try {
+                    val filePath = withContext(Dispatchers.IO) {
+                        val inputStream = context.contentResolver.openInputStream(it)
+                        val file = File(context.filesDir, "gallery_${System.currentTimeMillis()}.jpg")
+                        inputStream?.use { input ->
+                            file.outputStream().use { output ->
+                                input.copyTo(output)
+                            }
+                        }
+                        file.absolutePath
                     }
+                    viewModel.sendImage(filePath)
+                } catch (e: Exception) {
+                    Log.e("ChatScreen", "Failed to load gallery image", e)
                 }
-                viewModel.sendImage(file.absolutePath)
-            } catch (e: Exception) {
-                Log.e("ChatScreen", "Failed to load gallery image", e)
             }
         }
     }

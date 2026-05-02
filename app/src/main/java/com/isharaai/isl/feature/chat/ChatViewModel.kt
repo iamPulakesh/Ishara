@@ -206,15 +206,34 @@ class ChatViewModel @Inject constructor(
     // Scale camera images to avoid native OOM crashes in LiteRT
     private fun scaleImageToBytes(path: String): ByteArray {
         val original = BitmapFactory.decodeFile(path) ?: throw IllegalStateException("Failed to decode image")
-        val maxDim = 768
-        val scale = maxDim.toFloat() / maxOf(original.width, original.height)
-        val scaled = if (scale < 1f) Bitmap.createScaledBitmap(original, (original.width * scale).toInt(), (original.height * scale).toInt(), true) else original
-        val out = ByteArrayOutputStream()
-        scaled.compress(Bitmap.CompressFormat.JPEG, 90, out)
-        val bytes = out.toByteArray()
-        if (scaled !== original) original.recycle()
-        scaled.recycle()
-        return bytes
+        try {
+            val maxDim = 768
+            val scale = maxDim.toFloat() / maxOf(original.width, original.height)
+
+            // No scaling needed — compress original directly
+            if (scale >= 1f) {
+                val out = ByteArrayOutputStream()
+                original.compress(Bitmap.CompressFormat.JPEG, 90, out)
+                return out.toByteArray()
+            }
+
+            // Downscale to fit within maxDim
+            val scaled = Bitmap.createScaledBitmap(
+                original,
+                (original.width * scale).toInt(),
+                (original.height * scale).toInt(),
+                true
+            )
+            try {
+                val out = ByteArrayOutputStream()
+                scaled.compress(Bitmap.CompressFormat.JPEG, 90, out)
+                return out.toByteArray()
+            } finally {
+                scaled.recycle()
+            }
+        } finally {
+            original.recycle()
+        }
     }
 
     private fun addUserMessage(text: String) {

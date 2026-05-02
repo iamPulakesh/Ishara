@@ -20,7 +20,7 @@
 * **Language:** Kotlin
 * **UI Framework:** Jetpack Compose (Material 3)
 * **Dependency Injection:** Dagger Hilt
-* **Inference Model:** Google Gemma 4 E2B-IT
+* **Inference Model:** Gemma-4-E2B-it-litert-lm
 * **Local Database:** Room Database (Session/Chat History Tracking)
 * **Camera / Vision:** CameraX API
 * **Edge AI & Models:**

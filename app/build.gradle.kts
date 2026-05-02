@@ -179,7 +179,6 @@ dependencies {
 
     // Network (model download)
     implementation(libs.okhttp)
-    implementation(libs.okhttp.logging)
 
     // WorkManager (background model download)
     implementation(libs.workmanager)

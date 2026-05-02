@@ -26,7 +26,7 @@ fun parseISLMessage(raw: String): List<MessageSegment> {
             val textBefore = raw.substring(lastEnd, match.range.first).trim()
             if (textBefore.isNotEmpty()) segments.add(MessageSegment.Text(textBefore))
         }
-        val words = match.groupValues[1].split(",").map { it.trim().uppercase() }.filter { it.isNotEmpty() }
+        val words = match.groupValues[1].trim().split("\\s+".toRegex()).map { it.uppercase() }.filter { it.isNotEmpty() }
         if (words.isNotEmpty()) segments.add(MessageSegment.ISLBlock(words))
         lastEnd = match.range.last + 1
     }

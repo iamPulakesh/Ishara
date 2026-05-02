@@ -7,9 +7,6 @@ interface SignDao {
     @Query("SELECT * FROM signs WHERE signId = :signId")
     suspend fun getSign(signId: String): SignEntity?
 
-    @Query("SELECT * FROM signs WHERE category = :category")
-    suspend fun getSignsByCategory(category: String): List<SignEntity>
-
     @Query("SELECT * FROM signs")
     suspend fun getAllSigns(): List<SignEntity>
 

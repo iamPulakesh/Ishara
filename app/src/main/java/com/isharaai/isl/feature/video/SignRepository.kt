@@ -30,18 +30,4 @@ class SignRepository @Inject constructor(private val signDao: SignDao) {
     }
 
     suspend fun getSign(signId: String): SignEntity? = signDao.getSign(signId)
-
-    suspend fun getAllSigns(): List<SignEntity> = signDao.getAllSigns()
-
-    suspend fun getSignsByCategory(category: String): List<SignEntity> =
-        signDao.getSignsByCategory(category)
-
-    /**
-     * Resolves a sign's video resource name to its Android R.raw resource ID.
-     */
-    fun getVideoResId(context: Context, signEntity: SignEntity): Int {
-        return context.resources.getIdentifier(
-            signEntity.videoResName, "raw", context.packageName
-        )
-    }
 }

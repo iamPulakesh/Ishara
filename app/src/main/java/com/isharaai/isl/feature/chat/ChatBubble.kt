@@ -65,9 +65,13 @@ fun ChatBubble(message: ChatMessage) {
             Column {
                 // Show image if present
                 message.imagePath?.let { path ->
-                    val bitmap = remember(path) {
-                        BitmapFactory.decodeFile(path)
+                    var bitmap by remember { mutableStateOf<android.graphics.Bitmap?>(null) }
+
+                    DisposableEffect(path) {
+                        bitmap = decodeSampledBitmap(path, maxWidth = 600, maxHeight = 600)
+                        onDispose { bitmap?.recycle(); bitmap = null }
                     }
+
                     bitmap?.let {
                         Image(
                             bitmap = it.asImageBitmap(),
@@ -157,4 +161,31 @@ fun InlineTypingDots() {
 fun formatTime(timestamp: Long): String {
     val sdf = SimpleDateFormat("hh:mm a", Locale.getDefault())
     return sdf.format(Date(timestamp))
+}
+
+
+// Uses inSampleSize to avoid loading full-resolution bitmaps into native RAM.
+private fun decodeSampledBitmap(path: String, maxWidth: Int, maxHeight: Int): android.graphics.Bitmap? {
+    // read dimensions only (no pixel allocation)
+    val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+    BitmapFactory.decodeFile(path, options)
+
+    // Calculate largest inSampleSize that keeps both dimensions >= target
+    options.inSampleSize = calculateInSampleSize(options, maxWidth, maxHeight)
+    options.inJustDecodeBounds = false
+
+    return BitmapFactory.decodeFile(path, options)
+}
+
+private fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
+    val (height, width) = options.outHeight to options.outWidth
+    var inSampleSize = 1
+    if (height > reqHeight || width > reqWidth) {
+        val halfHeight = height / 2
+        val halfWidth = width / 2
+        while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
+            inSampleSize *= 2
+        }
+    }
+    return inSampleSize
 }

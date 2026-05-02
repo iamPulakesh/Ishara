@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.isharaai.isl.R
 import com.isharaai.isl.core.theme.*
-import com.isharaai.isl.feature.download.DownloadViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

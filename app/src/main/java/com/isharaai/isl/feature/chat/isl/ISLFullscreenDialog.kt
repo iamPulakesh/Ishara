@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import com.isharaai.isl.core.theme.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -87,7 +88,7 @@ fun ISLFullscreenDialog(wordVideoMap: List<Pair<String, Int>>, allWords: List<St
                 AnimatedVisibility(visible = isFinished, enter = fadeIn(), exit = fadeOut()) {
                     Button(
                         onClick = { currentIndex = 0; isFinished = false; replayTrigger++ },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32)),
+                        colors = ButtonDefaults.buttonColors(containerColor = AppGreen),
                         shape = RoundedCornerShape(24.dp)
                     ) {
                         Icon(Icons.Default.Replay, "Replay", modifier = Modifier.size(18.dp))
@@ -101,7 +102,7 @@ fun ISLFullscreenDialog(wordVideoMap: List<Pair<String, Int>>, allWords: List<St
                         val isCurrent = wordVideoMap.getOrNull(currentIndex)?.first == word
                         Surface(
                             shape = RoundedCornerShape(16.dp),
-                            color = if (isCurrent) Color(0xFF4CAF50) else Color.White.copy(alpha = 0.2f),
+                            color = if (isCurrent) MicGreen else Color.White.copy(alpha = 0.2f),
                             contentColor = Color.White
                         ) {
                             Text(word, modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp), fontSize = 13.sp, fontWeight = if (isCurrent) FontWeight.Bold else FontWeight.Normal)

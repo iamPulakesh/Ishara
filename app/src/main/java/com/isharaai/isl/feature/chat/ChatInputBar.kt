@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.isharaai.isl.R
 import com.isharaai.isl.speech.SpeechLanguage
-import com.isharaai.isl.core.theme.TextLight
+import com.isharaai.isl.core.theme.*
 import com.isharaai.isl.feature.onboarding.registerTarget
 
 /**
@@ -72,7 +72,7 @@ fun ChatInputBar(
                     Text(
                         if (isRecording) stringResource(R.string.listening)
                         else stringResource(R.string.chat_hint),
-                        color = if (isRecording) Color(0xFFD32F2F) else TextLight
+                        color = if (isRecording) ActiveRed else TextLight
                     )
                 },
                 leadingIcon = {
@@ -112,7 +112,7 @@ fun ChatInputBar(
                                 Icon(
                                     imageVector = if (isRecording) Icons.Default.Stop else Icons.Default.Mic,
                                     contentDescription = if (isRecording) "Stop" else "Voice",
-                                    tint = if (isRecording) Color(0xFFD32F2F) else Color.DarkGray
+                                    tint = if (isRecording) ActiveRed else Color.DarkGray
                                 )
                             }
                             DropdownMenu(
@@ -143,7 +143,7 @@ fun ChatInputBar(
                     focusedBorderColor = Color.Black,
                     unfocusedBorderColor = Color.Black.copy(alpha = 0.6f),
                     focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color(0xFFF5F5F5)
+                    unfocusedContainerColor = InputFieldBg
                 ),
                 maxLines = 4,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
@@ -165,7 +165,7 @@ fun ChatInputBar(
                     .size(48.dp)
                     .clip(CircleShape)
                     .background(
-                        if (canSend) Color(0xFFD32F2F)
+                        if (canSend) ActiveRed
                         else TextLight.copy(alpha = 0.3f)
                     )
                     .then(

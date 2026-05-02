@@ -84,7 +84,7 @@ fun ChatScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .shadow(4.dp)
-                .background(Color(0xFF2E7D32))
+                .background(AppGreen)
                 .statusBarsPadding()
                 .padding(horizontal = 12.dp, vertical = 8.dp)
         ) {

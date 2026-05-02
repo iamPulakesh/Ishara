@@ -14,7 +14,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.ui.PlayerView
 import com.isharaai.isl.R
-import com.isharaai.isl.feature.video.ISLVideoViewModel
 
 @Composable
 fun ISLVideoScreen(

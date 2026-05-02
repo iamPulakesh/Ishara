@@ -69,7 +69,7 @@ fun HistoryScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF2E7D32)
+                    containerColor = AppGreen
                 )
             )
         },

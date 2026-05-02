@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import com.isharaai.isl.core.theme.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -52,7 +53,7 @@ fun ISLSignPlayerCard(words: List<String>) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF1F8E9)),
+        colors = CardDefaults.cardColors(containerColor = ISLCardBg),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(modifier = Modifier.padding(10.dp)) {
@@ -72,7 +73,7 @@ fun ISLSignPlayerCard(words: List<String>) {
                 for ((word, resId) in wordVideoMap) {
                     Surface(
                         shape = RoundedCornerShape(16.dp),
-                        color = if (resId != 0) Color(0xFF2E7D32) else Color(0xFFBDBDBD),
+                        color = if (resId != 0) AppGreen else TextLight,
                         contentColor = Color.White
                     ) {
                         Text(word, modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp), fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
@@ -81,10 +82,10 @@ fun ISLSignPlayerCard(words: List<String>) {
                 Spacer(modifier = Modifier.weight(1f))
                 if (hasAnyVideo) {
                     IconButton(onClick = { replayTrigger++ }, modifier = Modifier.size(28.dp)) {
-                        Icon(Icons.Default.Replay, "Replay", tint = Color(0xFF2E7D32), modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Replay, "Replay", tint = AppGreen, modifier = Modifier.size(18.dp))
                     }
                     IconButton(onClick = { showFullscreen = true }, modifier = Modifier.size(28.dp)) {
-                        Icon(Icons.Default.Fullscreen, "Fullscreen", tint = Color(0xFF2E7D32), modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Fullscreen, "Fullscreen", tint = AppGreen, modifier = Modifier.size(18.dp))
                     }
                 }
             }

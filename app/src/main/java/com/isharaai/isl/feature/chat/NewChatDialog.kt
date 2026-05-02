@@ -6,6 +6,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.isharaai.isl.core.theme.AppGreen
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.isharaai.isl.R
@@ -37,15 +38,15 @@ fun NewChatDialog(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF2E7D32),
-                    cursorColor = Color(0xFF2E7D32)
+                    focusedBorderColor = AppGreen,
+                    cursorColor = AppGreen
                 )
             )
         },
         confirmButton = {
             Button(
                 onClick = { onConfirm(name.trim()) },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32)),
+                colors = ButtonDefaults.buttonColors(containerColor = AppGreen),
                 shape = RoundedCornerShape(10.dp)
             ) {
                 Text(stringResource(R.string.new_chat_ok))
@@ -55,7 +56,7 @@ fun NewChatDialog(
             TextButton(onClick = onDismiss) {
                 Text(
                     stringResource(R.string.new_chat_cancel),
-                    color = Color(0xFF2E7D32)
+                    color = AppGreen
                 )
             }
         }

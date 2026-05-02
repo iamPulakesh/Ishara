@@ -53,7 +53,7 @@ fun SettingsScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF2E7D32)
+                    containerColor = AppGreen
                 )
             )
         },
@@ -177,13 +177,13 @@ fun SettingsScreen(
                         modifier = Modifier
                             .size(42.dp)
                             .clip(RoundedCornerShape(10.dp))
-                            .background(Color(0xFF2E7D32).copy(alpha = 0.1f)),
+                            .background(AppGreen.copy(alpha = 0.1f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Default.Refresh,
                             contentDescription = "Replay Tutorial",
-                            tint = Color(0xFF2E7D32),
+                            tint = AppGreen,
                             modifier = Modifier.size(24.dp)
                         )
                     }

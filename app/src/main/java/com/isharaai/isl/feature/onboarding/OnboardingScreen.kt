@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import com.isharaai.isl.core.theme.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -43,7 +44,7 @@ fun OnboardingScreen(onComplete: (wantsTutorial: Boolean) -> Unit) {
     var step by remember { mutableIntStateOf(0) } // 0 = language, 1 = tutorial prompt
 
     Box(
-        modifier = Modifier.fillMaxSize().background(Color(0xFF1B5E20)),
+        modifier = Modifier.fillMaxSize().background(AppGreenDark),
         contentAlignment = Alignment.Center
     ) {
         Card(
@@ -58,8 +59,8 @@ fun OnboardingScreen(onComplete: (wantsTutorial: Boolean) -> Unit) {
             ) {
                 if (step == 0) {
                     // Language Selection
-                    Text("Welcome to Ishara", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1B5E20))
-                    Text("ইশারায় স্বাগতম", fontSize = 16.sp, color = Color(0xFF388E3C))
+                    Text("Welcome to Ishara", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = AppGreenDark)
+                    Text("ইশারায় স্বাগতম", fontSize = 16.sp, color = AppGreenMedium)
                     Spacer(modifier = Modifier.height(24.dp))
                     Text("Please select your language", fontSize = 14.sp, color = Color.Gray, textAlign = TextAlign.Center)
                     Text("আপনার ভাষা নির্বাচন করুন", fontSize = 13.sp, color = Color.Gray, textAlign = TextAlign.Center)
@@ -79,7 +80,7 @@ fun OnboardingScreen(onComplete: (wantsTutorial: Boolean) -> Unit) {
                     val isBn = LanguageManager.getCurrentLanguage(context) == LanguageManager.LANG_BENGALI
                     Text(
                         if (isBn) "আপনি কি টিউটোরিয়াল চান?" else "Would you like to see tutorial?",
-                        fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1B5E20), textAlign = TextAlign.Center
+                        fontSize = 20.sp, fontWeight = FontWeight.Bold, color = AppGreenDark, textAlign = TextAlign.Center
                     )
 
                     Spacer(modifier = Modifier.height(24.dp))
@@ -90,7 +91,7 @@ fun OnboardingScreen(onComplete: (wantsTutorial: Boolean) -> Unit) {
                             LanguageManager.applyStoredLanguage(context)
                             onComplete(true)
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32)),
+                        colors = ButtonDefaults.buttonColors(containerColor = AppGreen),
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) { Text(if (isBn) "হ্যাঁ" else "Yes, show me", fontWeight = FontWeight.Bold, fontSize = 15.sp) }
@@ -103,7 +104,7 @@ fun OnboardingScreen(onComplete: (wantsTutorial: Boolean) -> Unit) {
                         },
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth()
-                    ) { Text(if (isBn) "না" else "No, skip", fontSize = 15.sp, color = Color(0xFF2E7D32)) }
+                    ) { Text(if (isBn) "না" else "No, skip", fontSize = 15.sp, color = AppGreen) }
                 }
             }
         }
@@ -116,13 +117,13 @@ private fun LangCard(label: String, flag: String, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFFF1F8E9))
+            .background(ISLCardBg)
             .clickable(onClick = onClick)
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(flag, fontSize = 26.sp)
         Spacer(modifier = Modifier.width(14.dp))
-        Text(label, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF1B5E20))
+        Text(label, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = AppGreenDark)
     }
 }

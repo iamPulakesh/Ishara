@@ -8,11 +8,8 @@ val PrimaryPink      = Color(0xFFFF4081)   // Accent pink
 
 // Action Button Colors 
 val CameraBlue       = Color(0xFF2196F3)
-val CameraBlueLight  = Color(0xFF64B5F6)
 val MicGreen         = Color(0xFF4CAF50)
-val MicGreenLight    = Color(0xFF81C784)
 val TypeOrange       = Color(0xFFFF9800)
-val TypeOrangeLight  = Color(0xFFFFB74D)
 
 // Background & Surface 
 val BackgroundCream  = Color(0xFFFFF8F0)
@@ -27,13 +24,16 @@ val TextMedium       = Color(0xFF757575)
 val TextLight        = Color(0xFFBDBDBD)
 
 // Status 
-val SuccessGreen     = Color(0xFF43A047)
 val ErrorRed         = Color(0xFFE53935)
-val WarningAmber     = Color(0xFFFFA000)
 
-// Overlay 
-val OverlayBlack     = Color(0x99000000)
+// App Brand Greens
+val AppGreen         = Color(0xFF2E7D32)   // Primary green (app bars, buttons)
+val AppGreenDark     = Color(0xFF1B5E20)   // Dark green (onboarding background)
+val AppGreenMedium   = Color(0xFF388E3C)   // Medium green (subtitles)
 
-// Download Card Gradient 
-val DownloadGradientStart = Color(0xFF667EEA)
-val DownloadGradientEnd   = Color(0xFF764BA2)
+// Interactive State Colors
+val ActiveRed        = Color(0xFFD32F2F)   // Recording / active state red
+
+// Component Backgrounds
+val ISLCardBg        = Color(0xFFF1F8E9)   // Light green card background
+val InputFieldBg     = Color(0xFFF5F5F5)   // Unfocused input field background

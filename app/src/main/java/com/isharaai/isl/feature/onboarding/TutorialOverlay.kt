@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import com.isharaai.isl.core.theme.*
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
@@ -77,7 +78,7 @@ fun TutorialOverlay(onFinish: () -> Unit) {
                     drawCircle(Color.Transparent, radius, center, blendMode = BlendMode.Clear)
                     // Pulsing ring
                     drawCircle(
-                        Color(0xFF4CAF50).copy(alpha = pulseAlpha),
+                        MicGreen.copy(alpha = pulseAlpha),
                         radius * pulseScale,
                         center,
                         style = Stroke(width = 3.dp.toPx())
@@ -105,19 +106,19 @@ fun TutorialOverlay(onFinish: () -> Unit) {
                     elevation = CardDefaults.cardElevation(8.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(desc, fontSize = 15.sp, fontWeight = FontWeight.Medium, color = Color(0xFF212121), textAlign = TextAlign.Center)
+                        Text(desc, fontSize = 15.sp, fontWeight = FontWeight.Medium, color = TextDark, textAlign = TextAlign.Center)
                         Spacer(modifier = Modifier.height(12.dp))
                         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                             if (stepIndex < steps.size - 1) {
                                 OutlinedButton(onClick = { tts?.stop(); onFinish() }) { Text("Skip") }
                                 Button(
                                     onClick = { stepIndex++ },
-                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32))
+                                    colors = ButtonDefaults.buttonColors(containerColor = AppGreen)
                                 ) { Text("Next") }
                             } else {
                                 Button(
                                     onClick = { tts?.stop(); onFinish() },
-                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32))
+                                    colors = ButtonDefaults.buttonColors(containerColor = AppGreen)
                                 ) { Text("Done") }
                             }
                         }

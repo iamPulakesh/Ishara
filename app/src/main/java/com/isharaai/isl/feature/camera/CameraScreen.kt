@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.isharaai.isl.R
-import com.isharaai.isl.feature.camera.CameraViewModel
 import java.io.File
 import java.io.FileOutputStream
 

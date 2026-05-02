@@ -4,10 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.exoplayer.ExoPlayer
-import com.isharaai.isl.feature.video.SignRepository
 import com.isharaai.isl.core.db.SignEntity
-import com.isharaai.isl.feature.video.BengaliTTSManager
-import com.isharaai.isl.feature.video.ISLVideoPlayer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch

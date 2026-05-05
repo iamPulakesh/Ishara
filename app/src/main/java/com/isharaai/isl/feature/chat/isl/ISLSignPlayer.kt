@@ -32,17 +32,30 @@ fun ISLSignPlayerCard(words: List<String>) {
 
     val wordVideoMap = remember(words) {
         val mapped = mutableListOf<Pair<String, Int>>()
-        for (word in words) {
-            val resId = context.resources.getIdentifier("sign_${word.lowercase()}", "raw", context.packageName)
-            if (resId != 0) {
-                mapped.add(word to resId)
-            } else {
-                for (char in word) {
+        var i = 0
+        while (i < words.size) {
+            var matched = false
+            // Try longest compound first (up to 3 words), then shrink
+            for (len in minOf(3, words.size - i) downTo 1) {
+                val compound = words.subList(i, i + len)
+                val key = compound.joinToString("_") { it.lowercase() }
+                val resId = context.resources.getIdentifier("sign_$key", "raw", context.packageName)
+                if (resId != 0) {
+                    mapped.add(compound.joinToString(" ") to resId)
+                    i += len
+                    matched = true
+                    break
+                }
+            }
+            // Fallback: fingerspell the unmatched word
+            if (!matched) {
+                for (char in words[i]) {
                     if (char.isLetterOrDigit()) {
                         val charResId = context.resources.getIdentifier("sign_${char.lowercaseChar()}", "raw", context.packageName)
                         if (charResId != 0) mapped.add(char.uppercase() to charResId)
                     }
                 }
+                i++
             }
         }
         mapped

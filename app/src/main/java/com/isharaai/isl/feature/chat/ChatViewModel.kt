@@ -98,6 +98,7 @@ class ChatViewModel @Inject constructor(
                 isModelReady = ModelDownloadManager.isModelReady(context)
             )
         }
+        conversation?.close()
         conversation = null
 
         viewModelScope.launch {

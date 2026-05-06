@@ -114,17 +114,22 @@ fun ISLSignPlayerCard(words: List<String>) {
     }
 }
 
+// this function plays the videos in sequence
 @Composable
 fun ISLSequentialPlayer(wordVideoMap: List<Pair<String, Int>>, replayTrigger: Int = 0, onClick: () -> Unit = {}) {
     if (wordVideoMap.isEmpty()) return
     val context = LocalContext.current
     var currentIndex by remember { mutableIntStateOf(0) }
+    var hasPlayed by remember { mutableStateOf(false) }
 
     val exoPlayer = remember { ExoPlayer.Builder(context).build().apply { repeatMode = Player.REPEAT_MODE_OFF } }
 
-    LaunchedEffect(replayTrigger) { if (replayTrigger > 0) currentIndex = 0 }
+    LaunchedEffect(replayTrigger) {
+        if (replayTrigger > 0) { currentIndex = 0; hasPlayed = false }
+    }
 
-    LaunchedEffect(currentIndex, replayTrigger) {
+    LaunchedEffect(currentIndex, replayTrigger, hasPlayed) {
+        if (hasPlayed) return@LaunchedEffect
         val entry = wordVideoMap.getOrNull(currentIndex) ?: return@LaunchedEffect
         exoPlayer.setMediaItem(MediaItem.fromUri(Uri.parse("android.resource://${context.packageName}/${entry.second}")))
         exoPlayer.prepare()
@@ -134,7 +139,10 @@ fun ISLSequentialPlayer(wordVideoMap: List<Pair<String, Int>>, replayTrigger: In
     DisposableEffect(exoPlayer) {
         val listener = object : Player.Listener {
             override fun onPlaybackStateChanged(state: Int) {
-                if (state == Player.STATE_ENDED && currentIndex < wordVideoMap.size - 1) currentIndex++
+                if (state == Player.STATE_ENDED) {
+                    if (currentIndex < wordVideoMap.size - 1) currentIndex++
+                    else hasPlayed = true
+                }
             }
         }
         exoPlayer.addListener(listener)

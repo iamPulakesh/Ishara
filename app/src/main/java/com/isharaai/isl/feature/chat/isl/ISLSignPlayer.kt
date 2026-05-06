@@ -32,17 +32,30 @@ fun ISLSignPlayerCard(words: List<String>) {
 
     val wordVideoMap = remember(words) {
         val mapped = mutableListOf<Pair<String, Int>>()
-        for (word in words) {
-            val resId = context.resources.getIdentifier("sign_${word.lowercase()}", "raw", context.packageName)
-            if (resId != 0) {
-                mapped.add(word to resId)
-            } else {
-                for (char in word) {
+        var i = 0
+        while (i < words.size) {
+            var matched = false
+            // Try longest compound first (up to 3 words), then shrink
+            for (len in minOf(3, words.size - i) downTo 1) {
+                val compound = words.subList(i, i + len)
+                val key = compound.joinToString("_") { it.lowercase() }
+                val resId = context.resources.getIdentifier("sign_$key", "raw", context.packageName)
+                if (resId != 0) {
+                    mapped.add(compound.joinToString(" ") to resId)
+                    i += len
+                    matched = true
+                    break
+                }
+            }
+            // Fallback: fingerspell the unmatched word
+            if (!matched) {
+                for (char in words[i]) {
                     if (char.isLetterOrDigit()) {
                         val charResId = context.resources.getIdentifier("sign_${char.lowercaseChar()}", "raw", context.packageName)
                         if (charResId != 0) mapped.add(char.uppercase() to charResId)
                     }
                 }
+                i++
             }
         }
         mapped
@@ -101,17 +114,22 @@ fun ISLSignPlayerCard(words: List<String>) {
     }
 }
 
+// this function plays the videos in sequence
 @Composable
 fun ISLSequentialPlayer(wordVideoMap: List<Pair<String, Int>>, replayTrigger: Int = 0, onClick: () -> Unit = {}) {
     if (wordVideoMap.isEmpty()) return
     val context = LocalContext.current
     var currentIndex by remember { mutableIntStateOf(0) }
+    var hasPlayed by remember { mutableStateOf(false) }
 
     val exoPlayer = remember { ExoPlayer.Builder(context).build().apply { repeatMode = Player.REPEAT_MODE_OFF } }
 
-    LaunchedEffect(replayTrigger) { if (replayTrigger > 0) currentIndex = 0 }
+    LaunchedEffect(replayTrigger) {
+        if (replayTrigger > 0) { currentIndex = 0; hasPlayed = false }
+    }
 
-    LaunchedEffect(currentIndex, replayTrigger) {
+    LaunchedEffect(currentIndex, replayTrigger, hasPlayed) {
+        if (hasPlayed) return@LaunchedEffect
         val entry = wordVideoMap.getOrNull(currentIndex) ?: return@LaunchedEffect
         exoPlayer.setMediaItem(MediaItem.fromUri(Uri.parse("android.resource://${context.packageName}/${entry.second}")))
         exoPlayer.prepare()
@@ -121,7 +139,10 @@ fun ISLSequentialPlayer(wordVideoMap: List<Pair<String, Int>>, replayTrigger: In
     DisposableEffect(exoPlayer) {
         val listener = object : Player.Listener {
             override fun onPlaybackStateChanged(state: Int) {
-                if (state == Player.STATE_ENDED && currentIndex < wordVideoMap.size - 1) currentIndex++
+                if (state == Player.STATE_ENDED) {
+                    if (currentIndex < wordVideoMap.size - 1) currentIndex++
+                    else hasPlayed = true
+                }
             }
         }
         exoPlayer.addListener(listener)

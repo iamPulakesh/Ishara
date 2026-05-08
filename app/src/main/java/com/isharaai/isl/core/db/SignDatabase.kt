@@ -6,13 +6,12 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [SignEntity::class, ChatSessionEntity::class, ChatMessageEntity::class],
-    version = 2,
+    entities = [ChatSessionEntity::class, ChatMessageEntity::class],
+    version = 3,
     exportSchema = false
 )
 abstract class SignDatabase : RoomDatabase() {
 
-    abstract fun signDao(): SignDao
     abstract fun chatDao(): ChatDao
 
     companion object {

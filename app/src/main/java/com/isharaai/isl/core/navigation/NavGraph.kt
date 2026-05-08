@@ -16,7 +16,6 @@ import com.isharaai.isl.feature.onboarding.isOnboardingCompleted
 import com.isharaai.isl.feature.onboarding.isTutorialPending
 import com.isharaai.isl.feature.onboarding.setTutorialPending
 import com.isharaai.isl.feature.settings.SettingsScreen
-import com.isharaai.isl.feature.video.ISLVideoScreen
 
 sealed class Screen(val route: String) {
     object Onboarding : Screen("onboarding")
@@ -25,9 +24,6 @@ sealed class Screen(val route: String) {
     object Settings : Screen("settings")
     object History  : Screen("history")
     object Camera   : Screen("camera")
-    object Video    : Screen("isl_video/{signId}") {
-        fun withSignId(id: String) = "isl_video/$id"
-    }
 }
 
 // Keys for passing data between screens
@@ -142,21 +138,6 @@ fun IsharaAINavGraph() {
                 onBack = { navController.popBackStack() }
             )
         }
-
-        composable(
-            route = Screen.Video.route,
-            arguments = listOf(navArgument("signId") { type = NavType.StringType })
-        ) { backStackEntry ->
-            val signId = backStackEntry.arguments?.getString("signId") ?: "HELP"
-            ISLVideoScreen(
-                signId    = signId,
-                onBack    = { navController.popBackStack(Screen.Chat.route, false) },
-                onPlayAgain = {
-                    navController.navigate(Screen.Video.withSignId(signId)) {
-                        popUpTo(Screen.Video.route) { inclusive = true }
-                    }
-                }
-            )
-        }
     }
 }
+

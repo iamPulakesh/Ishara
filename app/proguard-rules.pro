@@ -2,16 +2,12 @@
 -keep class com.google.ai.edge.litert.** { *; }
 -keep class com.google.ai.edge.litert.lm.** { *; }
 
-#  Gson 
--keepattributes Signature
--keepattributes *Annotation*
--keep class com.google.gson.** { *; }
--keep class com.isharaai.isl.inference.GemmaResponse { *; }
+
 
 #  Room 
 -keep class * extends androidx.room.RoomDatabase
 -keep @androidx.room.Entity class *
--keep class com.isharaai.isl.data.db.** { *; }
+-keep class com.isharaai.isl.core.db.** { *; }
 
 #  OkHttp 
 -dontwarn okhttp3.**

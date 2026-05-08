@@ -188,9 +188,6 @@ dependencies {
     // Coroutines
     implementation(libs.coroutines.android)
 
-    // JSON parsing
-    implementation(libs.gson)
-
     // Sherpa-ONNX (offline speech recognition) - auto-downloaded locally
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
 }

@@ -1,4 +1,4 @@
-package com.isharaai.isl.speech
+package com.isharaai.isl.core.speech
 
 import android.content.Context
 import android.content.Intent

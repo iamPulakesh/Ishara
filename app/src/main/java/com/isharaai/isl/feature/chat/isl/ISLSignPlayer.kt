@@ -3,6 +3,7 @@ package com.isharaai.isl.feature.chat.isl
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -15,6 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import com.isharaai.isl.core.theme.*
+import com.isharaai.isl.feature.addusersigns.UserSignManager
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -25,13 +28,23 @@ import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 
+/** Resolves a sign key to a URI string — checks bundled res/raw first, then user signs. */
+private fun resolveSignUri(context: android.content.Context, key: String): String {
+    val resId = context.resources.getIdentifier("sign_$key", "raw", context.packageName)
+    if (resId != 0) return "android.resource://${context.packageName}/$resId"
+    val userFile = UserSignManager.getSignFile(context, key)
+    if (userFile != null) return Uri.fromFile(userFile).toString()
+    return ""
+}
+
 @Composable
 fun ISLSignPlayerCard(words: List<String>) {
     val context = LocalContext.current
     var showFullscreen by remember { mutableStateOf(false) }
 
+    // Map each word (or compound/fingerspell) to its video URI string ("" = no video)
     val wordVideoMap = remember(words) {
-        val mapped = mutableListOf<Pair<String, Int>>()
+        val mapped = mutableListOf<Pair<String, String>>()
         var i = 0
         while (i < words.size) {
             var matched = false
@@ -39,9 +52,9 @@ fun ISLSignPlayerCard(words: List<String>) {
             for (len in minOf(3, words.size - i) downTo 1) {
                 val compound = words.subList(i, i + len)
                 val key = compound.joinToString("_") { it.lowercase() }
-                val resId = context.resources.getIdentifier("sign_$key", "raw", context.packageName)
-                if (resId != 0) {
-                    mapped.add(compound.joinToString(" ") to resId)
+                val uri = resolveSignUri(context, key)
+                if (uri.isNotEmpty()) {
+                    mapped.add(compound.joinToString(" ") to uri)
                     i += len
                     matched = true
                     break
@@ -51,8 +64,8 @@ fun ISLSignPlayerCard(words: List<String>) {
             if (!matched) {
                 for (char in words[i]) {
                     if (char.isLetterOrDigit()) {
-                        val charResId = context.resources.getIdentifier("sign_${char.lowercaseChar()}", "raw", context.packageName)
-                        if (charResId != 0) mapped.add(char.uppercase() to charResId)
+                        val uri = resolveSignUri(context, char.lowercaseChar().toString())
+                        if (uri.isNotEmpty()) mapped.add(char.uppercase() to uri)
                     }
                 }
                 i++
@@ -60,7 +73,7 @@ fun ISLSignPlayerCard(words: List<String>) {
         }
         mapped
     }
-    val hasAnyVideo = wordVideoMap.any { it.second != 0 }
+    val hasAnyVideo = wordVideoMap.any { it.second.isNotEmpty() }
     var replayTrigger by remember { mutableIntStateOf(0) }
 
     Card(
@@ -72,7 +85,7 @@ fun ISLSignPlayerCard(words: List<String>) {
         Column(modifier = Modifier.padding(10.dp)) {
             if (hasAnyVideo) {
                 ISLSequentialPlayer(
-                    wordVideoMap = wordVideoMap.filter { it.second != 0 },
+                    wordVideoMap = wordVideoMap.filter { it.second.isNotEmpty() },
                     replayTrigger = replayTrigger,
                     onClick = { showFullscreen = true }
                 )
@@ -83,10 +96,10 @@ fun ISLSignPlayerCard(words: List<String>) {
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                for ((word, resId) in wordVideoMap) {
+                for ((word, uri) in wordVideoMap) {
                     Surface(
                         shape = RoundedCornerShape(16.dp),
-                        color = if (resId != 0) AppGreen else TextLight,
+                        color = if (uri.isNotEmpty()) AppGreen else TextLight,
                         contentColor = Color.White
                     ) {
                         Text(word, modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp), fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
@@ -107,7 +120,7 @@ fun ISLSignPlayerCard(words: List<String>) {
 
     if (showFullscreen && hasAnyVideo) {
         ISLFullscreenDialog(
-            wordVideoMap = wordVideoMap.filter { it.second != 0 },
+            wordVideoMap = wordVideoMap.filter { it.second.isNotEmpty() },
             allWords = words,
             onDismiss = { showFullscreen = false }
         )
@@ -116,7 +129,7 @@ fun ISLSignPlayerCard(words: List<String>) {
 
 // this function plays the videos in sequence
 @Composable
-fun ISLSequentialPlayer(wordVideoMap: List<Pair<String, Int>>, replayTrigger: Int = 0, onClick: () -> Unit = {}) {
+fun ISLSequentialPlayer(wordVideoMap: List<Pair<String, String>>, replayTrigger: Int = 0, onClick: () -> Unit = {}) {
     if (wordVideoMap.isEmpty()) return
     val context = LocalContext.current
     var currentIndex by remember { mutableIntStateOf(0) }
@@ -131,7 +144,7 @@ fun ISLSequentialPlayer(wordVideoMap: List<Pair<String, Int>>, replayTrigger: In
     LaunchedEffect(currentIndex, replayTrigger, hasPlayed) {
         if (hasPlayed) return@LaunchedEffect
         val entry = wordVideoMap.getOrNull(currentIndex) ?: return@LaunchedEffect
-        exoPlayer.setMediaItem(MediaItem.fromUri(Uri.parse("android.resource://${context.packageName}/${entry.second}")))
+        exoPlayer.setMediaItem(MediaItem.fromUri(Uri.parse(entry.second)))
         exoPlayer.prepare()
         exoPlayer.playWhenReady = true
     }
@@ -150,7 +163,26 @@ fun ISLSequentialPlayer(wordVideoMap: List<Pair<String, Int>>, replayTrigger: In
     }
 
     Box(
-        modifier = Modifier.fillMaxWidth().aspectRatio(16f / 9f).clip(RoundedCornerShape(8.dp)).background(Color.Black).clickable { onClick() }
+        modifier = Modifier
+            .fillMaxWidth()
+            .aspectRatio(16f / 9f)
+            .clip(RoundedCornerShape(8.dp))
+            .background(Color.Black)
+            .pointerInput(Unit) {
+                var totalDrag = 0f
+                detectHorizontalDragGestures(
+                    onDragStart = { totalDrag = 0f },
+                    onDragEnd = {
+                        if (totalDrag < -80 && currentIndex < wordVideoMap.size - 1) {
+                            currentIndex++; hasPlayed = false
+                        } else if (totalDrag > 80 && currentIndex > 0) {
+                            currentIndex--; hasPlayed = false
+                        }
+                    },
+                    onHorizontalDrag = { change, dragAmount -> change.consume(); totalDrag += dragAmount }
+                )
+            }
+            .clickable { onClick() }
     ) {
         AndroidView(factory = { PlayerView(it).apply { player = exoPlayer; useController = false } }, modifier = Modifier.fillMaxSize())
         if (wordVideoMap.size > 1) {

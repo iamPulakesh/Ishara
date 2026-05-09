@@ -16,6 +16,7 @@ import com.isharaai.isl.feature.onboarding.isOnboardingCompleted
 import com.isharaai.isl.feature.onboarding.isTutorialPending
 import com.isharaai.isl.feature.onboarding.setTutorialPending
 import com.isharaai.isl.feature.settings.SettingsScreen
+import com.isharaai.isl.feature.addusersigns.UserSignsScreen
 
 sealed class Screen(val route: String) {
     object Onboarding : Screen("onboarding")
@@ -24,6 +25,7 @@ sealed class Screen(val route: String) {
     object Settings : Screen("settings")
     object History  : Screen("history")
     object Camera   : Screen("camera")
+    object UserSigns : Screen("user_signs")
 }
 
 // Keys for passing data between screens
@@ -100,6 +102,7 @@ fun IsharaAINavGraph() {
             SettingsScreen(
                 onBack = { navController.popBackStack() },
                 onHistoryClick = { navController.navigate(Screen.History.route) },
+                onMySignsClick = { navController.navigate(Screen.UserSigns.route) },
                 onReplayTutorial = {
                     setTutorialPending(context, true)
                     showTutorial = true
@@ -137,6 +140,10 @@ fun IsharaAINavGraph() {
                 },
                 onBack = { navController.popBackStack() }
             )
+        }
+
+        composable(Screen.UserSigns.route) {
+            UserSignsScreen(onBack = { navController.popBackStack() })
         }
     }
 }

@@ -6,6 +6,7 @@
     <!-- General -->
     <string name="loading">লোড হচ্ছে…</string>
     <string name="error_generic">কিছু একটা ভুল হয়েছে। আবার চেষ্টা করুন।</string>
+    <string name="btn_back">পিছনে যাও</string>
 
     <!-- Download Screen -->
     <string name="download_title">AI মডেল ডাউনলোড</string>
@@ -13,10 +14,6 @@
     <string name="btn_download_start">ডাউনলোড শুরু করুন</string>
     <string name="btn_retry">আবার চেষ্টা করুন</string>
     <string name="btn_download">ডাউনলোড করুন</string>
-
-    <!-- Video Screen -->
-    <string name="btn_back">পিছনে যাও</string>
-    <string name="btn_play_again">আবার দেখো</string>
 
     <!-- Camera Screen -->
     <string name="analyzing">বিশ্লেষণ করা হচ্ছে...</string>
@@ -44,7 +41,6 @@
     <string name="chat_model_needed">চ্যাট শুরু করতে প্রথমে AI মডেল ডাউনলোড করুন।</string>
     <string name="chat_hint">বার্তা লিখুন…</string>
     <string name="chat_error">দুঃখিত, আবার চেষ্টা করুন।</string>
-    <string name="chat_sign_found">আমি ISL সাইন পেয়েছি: %1$s </string>
     <string name="chat_sender_you">আপনি</string>
     <string name="chat_sender_ai">ইশারা</string>
 
@@ -67,4 +63,23 @@
     <!-- Tutorial -->
     <string name="tutorial_replay">টিউটোরিয়াল দেখুন</string>
     <string name="tutorial_replay_desc">অ্যাপটি কীভাবে ব্যবহার করবেন তা জানুন</string>
+
+    <!-- My Signs -->
+    <string name="my_signs_title">আমার সাইন</string>
+    <string name="my_signs_desc">নিজের সাইন ভিডিও রেকর্ড করুন</string>
+    <string name="my_signs_empty">কোনো সাইন নেই</string>
+    <string name="my_signs_empty_hint">প্রথম সাইন রেকর্ড করতে + চাপুন</string>
+    <string name="my_signs_add_title">নতুন সাইন যোগ করুন</string>
+    <string name="my_signs_placeholder">যেমন: bedroom, football ইত্যাদি</string>
+    <string name="my_signs_camera_hint">রেকর্ড বাটনে ক্লিক করলে ক্যামেরা খুলবে আপনার সাইন রেকর্ড করতে।</string>
+    <string name="my_signs_record">রেকর্ড</string>
+    <string name="my_signs_cancel">বাতিল</string>
+    <string name="my_signs_saved">সাইন সেভ হয়েছে: %1$s</string>
+    <string name="my_signs_error_empty">একটি শব্দ লিখুন</string>
+    <string name="my_signs_error_short">শব্দটি খুব ছোট</string>
+    <string name="my_signs_error_bundled">\"%1$s\" অ্যাপে আগে থেকেই আছে</string>
+    <string name="my_signs_error_exists">আপনি আগেই \"%1$s\" রেকর্ড করেছেন</string>
+    <string name="my_signs_delete_title">সাইন মুছুন</string>
+    <string name="my_signs_delete_confirm">\"%1$s\" এর রেকর্ড করা সাইন মুছে ফেলবেন?</string>
+    <string name="my_signs_delete">মুছুন</string>
 </resources>

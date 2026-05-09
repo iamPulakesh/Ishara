@@ -6,6 +6,7 @@
     <!-- General -->
     <string name="loading">Loading…</string>
     <string name="error_generic">Something went wrong. Please try again.</string>
+    <string name="btn_back">Go Back</string>
 
     <!-- Download Screen -->
     <string name="download_title">AI Model Download</string>
@@ -13,10 +14,6 @@
     <string name="btn_download_start">Start Download</string>
     <string name="btn_retry">Try Again</string>
     <string name="btn_download">Download</string>
-
-    <!-- Video Screen -->
-    <string name="btn_back">Go Back</string>
-    <string name="btn_play_again">Watch Again</string>
 
     <!-- Camera Screen -->
     <string name="analyzing">Analyzing…</string>
@@ -44,7 +41,6 @@
     <string name="chat_model_needed">Please download the AI model first to start chatting.</string>
     <string name="chat_hint">Type a message…</string>
     <string name="chat_error">Sorry, something went wrong. Please try again.</string>
-    <string name="chat_sign_found">I found the ISL sign: %1$s </string>
     <string name="chat_sender_you">You</string>
     <string name="chat_sender_ai">Ishara</string>
 
@@ -67,4 +63,23 @@
     <!-- Tutorial -->
     <string name="tutorial_replay">Tutorial</string>
     <string name="tutorial_replay_desc">Learn how to use the app</string>
+
+    <!-- My Signs -->
+    <string name="my_signs_title">My Signs</string>
+    <string name="my_signs_desc">Record and manage your own sign videos</string>
+    <string name="my_signs_empty">No custom signs yet</string>
+    <string name="my_signs_empty_hint">Tap + to record your first sign</string>
+    <string name="my_signs_add_title">Add New Sign</string>
+    <string name="my_signs_placeholder">e.g. bedroom, football etc</string>
+    <string name="my_signs_camera_hint">On clicking record Camera will open to record your sign.</string>
+    <string name="my_signs_record">Record</string>
+    <string name="my_signs_cancel">Cancel</string>
+    <string name="my_signs_saved">Sign saved: %1$s</string>
+    <string name="my_signs_error_empty">Enter a word</string>
+    <string name="my_signs_error_short">Word too short</string>
+    <string name="my_signs_error_bundled">\"%1$s\" already exists in the app</string>
+    <string name="my_signs_error_exists">You already recorded \"%1$s\"</string>
+    <string name="my_signs_delete_title">Delete Sign</string>
+    <string name="my_signs_delete_confirm">Remove your recorded sign for \"%1$s\"?</string>
+    <string name="my_signs_delete">Delete</string>
 </resources>

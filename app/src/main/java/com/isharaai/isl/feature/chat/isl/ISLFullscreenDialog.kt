@@ -31,7 +31,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 
 @Composable
-fun ISLFullscreenDialog(wordVideoMap: List<Pair<String, Int>>, allWords: List<String>, onDismiss: () -> Unit) {
+fun ISLFullscreenDialog(wordVideoMap: List<Pair<String, String>>, allWords: List<String>, onDismiss: () -> Unit) {
     Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         val context = LocalContext.current
         var currentIndex by remember { mutableIntStateOf(0) }
@@ -43,7 +43,7 @@ fun ISLFullscreenDialog(wordVideoMap: List<Pair<String, Int>>, allWords: List<St
         LaunchedEffect(currentIndex, replayTrigger) {
             val entry = wordVideoMap.getOrNull(currentIndex) ?: return@LaunchedEffect
             exoPlayer.stop()
-            exoPlayer.setMediaItem(MediaItem.fromUri(Uri.parse("android.resource://${context.packageName}/${entry.second}")))
+            exoPlayer.setMediaItem(MediaItem.fromUri(Uri.parse(entry.second)))
             exoPlayer.prepare()
             exoPlayer.playWhenReady = true
             isFinished = false

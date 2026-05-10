@@ -6,7 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Videocam
@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -23,8 +24,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.isharaai.isl.R
 import com.isharaai.isl.core.theme.*
+import com.isharaai.isl.core.language.LanguageManager
+import com.isharaai.isl.core.ui.IsharaListCard
+import com.isharaai.isl.core.ui.IsharaListIcon
+import com.isharaai.isl.core.ui.IsharaTopAppBar
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     onBack: () -> Unit,
@@ -37,26 +41,9 @@ fun SettingsScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        stringResource(R.string.settings),
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack, 
-                            contentDescription = "Back",
-                            tint = Color.White
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = AppGreen
-                )
+            IsharaTopAppBar(
+                title = stringResource(R.string.settings),
+                onBack = onBack
             )
         },
         containerColor = BackgroundCream
@@ -67,99 +54,25 @@ fun SettingsScreen(
                 .padding(padding)
                 .padding(16.dp)
         ) {
-            // Chat History Card
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(onClick = onHistoryClick),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = CardWhite),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(20.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(42.dp)
-                            .clip(RoundedCornerShape(10.dp))
-                            .background(PrimaryPurple.copy(alpha = 0.1f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.History,
-                            contentDescription = "History",
-                            tint = PrimaryPurple,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(14.dp))
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = stringResource(R.string.history_title),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold,
-                            color = TextDark
-                        )
-                        Text(
-                            text = stringResource(R.string.history_desc),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = TextMedium
-                        )
-                    }
-                }
-            }
+            // Chat History
+            SettingsItem(
+                icon = Icons.Default.History,
+                iconTint = PrimaryPurple,
+                title = stringResource(R.string.history_title),
+                description = stringResource(R.string.history_desc),
+                onClick = onHistoryClick
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // My Signs Card
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(onClick = onMySignsClick),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = CardWhite),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(20.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(42.dp)
-                            .clip(RoundedCornerShape(10.dp))
-                            .background(AppGreen.copy(alpha = 0.1f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Videocam,
-                            contentDescription = "My Signs",
-                            tint = AppGreen,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(14.dp))
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = stringResource(R.string.my_signs_title),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold,
-                            color = TextDark
-                        )
-                        Text(
-                            text = stringResource(R.string.my_signs_desc),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = TextMedium
-                        )
-                    }
-                }
-            }
+            // My Signs
+            SettingsItem(
+                icon = Icons.Default.Videocam,
+                iconTint = AppGreen,
+                title = stringResource(R.string.my_signs_title),
+                description = stringResource(R.string.my_signs_desc),
+                onClick = onMySignsClick
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -183,7 +96,7 @@ fun SettingsScreen(
                     // English option
                     LanguageOption(
                         label = "English",
-                        flag = "🇺🇸",
+                        flag = "\uD83C\uDDFA\uD83C\uDDF8",
                         isSelected = currentLang == LanguageManager.LANG_ENGLISH,
                         onClick = {
                             currentLang = LanguageManager.LANG_ENGLISH
@@ -195,8 +108,8 @@ fun SettingsScreen(
 
                     // Bengali option
                     LanguageOption(
-                        label = "Bengali(বাংলা)",
-                        flag = "🇮🇳",
+                        label = "Bengali(\u09AC\u09BE\u0982\u09B2\u09BE)",
+                        flag = "\uD83C\uDDEE\uD83C\uDDF3",
                         isSelected = currentLang == LanguageManager.LANG_BENGALI,
                         onClick = {
                             currentLang = LanguageManager.LANG_BENGALI
@@ -208,55 +121,51 @@ fun SettingsScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Replay Tutorial Card
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(onClick = onReplayTutorial),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = CardWhite),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(20.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(42.dp)
-                            .clip(RoundedCornerShape(10.dp))
-                            .background(AppGreen.copy(alpha = 0.1f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Refresh,
-                            contentDescription = "Replay Tutorial",
-                            tint = AppGreen,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(14.dp))
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = stringResource(R.string.tutorial_replay),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold,
-                            color = TextDark
-                        )
-                        Text(
-                            text = stringResource(R.string.tutorial_replay_desc),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = TextMedium
-                        )
-                    }
-                }
-            }
+            // Replay Tutorial
+            SettingsItem(
+                icon = Icons.Default.Refresh,
+                iconTint = AppGreen,
+                title = stringResource(R.string.tutorial_replay),
+                description = stringResource(R.string.tutorial_replay_desc),
+                onClick = onReplayTutorial
+            )
         }
     }
 }
 
+// Reusable settings menu item card
+@Composable
+private fun SettingsItem(
+    icon: ImageVector,
+    iconTint: Color,
+    title: String,
+    description: String,
+    onClick: () -> Unit
+) {
+    IsharaListCard(onClick = onClick) {
+        IsharaListIcon(
+            icon = icon,
+            iconTint = iconTint,
+            contentDescription = title
+        )
+        Spacer(modifier = Modifier.width(14.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = TextDark
+            )
+            Text(
+                text = description,
+                style = MaterialTheme.typography.bodySmall,
+                color = TextMedium
+            )
+        }
+    }
+}
+
+//Languages Option
 @Composable
 private fun LanguageOption(
     label: String,
@@ -288,7 +197,7 @@ private fun LanguageOption(
             modifier = Modifier.weight(1f)
         )
         if (isSelected) {
-            Text("✓", fontSize = 20.sp, color = PrimaryPurple)
+            Icon(Icons.Default.Check, contentDescription = null, tint = PrimaryPurple, modifier = Modifier.size(20.dp))
         }
     }
 }

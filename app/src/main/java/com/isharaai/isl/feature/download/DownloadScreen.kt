@@ -3,6 +3,8 @@ package com.isharaai.isl.feature.download
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -17,11 +19,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.isharaai.isl.R
 import com.isharaai.isl.core.theme.*
-import com.isharaai.isl.feature.download.DownloadViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SplashDownloadScreen(
+fun DownloadScreen(
     onDownloadComplete: () -> Unit,
     viewModel: DownloadViewModel = hiltViewModel()
 ) {
@@ -51,10 +52,6 @@ fun SplashDownloadScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Animated download icon
-            Text("", fontSize = 64.sp)
-
-            Spacer(modifier = Modifier.height(16.dp))
 
             Text(
                 text = stringResource(R.string.download_title),
@@ -113,7 +110,7 @@ fun SplashDownloadScreen(
                             modifier = Modifier.padding(24.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text("⚠️", fontSize = 32.sp)
+                            Icon(Icons.Default.Warning, contentDescription = null, tint = ErrorRed, modifier = Modifier.size(32.dp))
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
                                 text = uiState.errorMessage

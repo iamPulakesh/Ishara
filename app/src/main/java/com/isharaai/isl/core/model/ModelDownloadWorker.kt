@@ -1,13 +1,15 @@
-package com.isharaai.isl.core.inference
+package com.isharaai.isl.core.model
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.*
 import com.isharaai.isl.BuildConfig
+import com.isharaai.isl.R
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import okhttp3.OkHttpClient
@@ -56,7 +58,7 @@ class ModelDownloadWorker @AssistedInject constructor(
         }
         val notification = NotificationCompat.Builder(applicationContext, channelId)
             .setContentTitle("IsharaAI")
-            .setContentText("AI মডেল ডাউনলোড হচ্ছে...")
+            .setContentText(applicationContext.getString(R.string.download_notification))
             .setSmallIcon(android.R.drawable.stat_sys_download)
             .setOngoing(true)
             .build()
@@ -70,7 +72,7 @@ class ModelDownloadWorker @AssistedInject constructor(
         val tempFile = File(modelFile.parent, "${ModelDownloadManager.MODEL_FILENAME}.tmp")
         val downloadUrl = BuildConfig.MODEL_DOWNLOAD_URL
 
-        android.util.Log.i("ModelDownload", "Starting download from: $downloadUrl")
+        Log.i("ModelDownload", "Starting download from: $downloadUrl")
 
         return try {
             val request = Request.Builder()
@@ -79,17 +81,17 @@ class ModelDownloadWorker @AssistedInject constructor(
                     // Resume support — send Range header if partial download exists
                     if (tempFile.exists() && tempFile.length() > 0) {
                         header("Range", "bytes=${tempFile.length()}-")
-                        android.util.Log.i("ModelDownload", "Resuming from byte ${tempFile.length()}")
+                        Log.i("ModelDownload", "Resuming from byte ${tempFile.length()}")
                     }
                 }
                 .build()
 
             val response = okHttpClient.newCall(request).execute()
-            android.util.Log.i("ModelDownload", "HTTP response: ${response.code} ${response.message}")
+            Log.i("ModelDownload", "HTTP response: ${response.code} ${response.message}")
 
             if (!response.isSuccessful && response.code != 206) {
                 val errorMsg = "HTTP ${response.code}: ${response.message}"
-                android.util.Log.e("ModelDownload", "Download failed: $errorMsg")
+                Log.e("ModelDownload", "Download failed: $errorMsg")
                 return Result.failure(workDataOf(KEY_ERROR to errorMsg))
             }
 
@@ -116,25 +118,25 @@ class ModelDownloadWorker @AssistedInject constructor(
                     }
                 }
             } ?: run {
-                android.util.Log.e("ModelDownload", "Response body is null")
+                Log.e("ModelDownload", "Response body is null")
                 return Result.failure(workDataOf(KEY_ERROR to "Empty response from server"))
             }
 
-            android.util.Log.i("ModelDownload", "Download complete. Verifying checksum...")
+            Log.i("ModelDownload", "Download complete. Verifying checksum...")
 
             // Verify checksum after full download
             if (!ModelDownloadManager.verifyChecksum(tempFile)) {
-                android.util.Log.e("ModelDownload", "Checksum verification failed")
+                Log.e("ModelDownload", "Checksum verification failed")
                 tempFile.delete()
                 return Result.failure(workDataOf(KEY_ERROR to "Checksum verification failed"))
             }
 
             // Atomically rename temp file to final model file
             tempFile.renameTo(modelFile)
-            android.util.Log.i("ModelDownload", "Model ready at ${modelFile.absolutePath}")
+            Log.i("ModelDownload", "Model ready at ${modelFile.absolutePath}")
             Result.success()
         } catch (e: Exception) {
-            android.util.Log.e("ModelDownload", "Download error: ${e.message}", e)
+            Log.e("ModelDownload", "Download error: ${e.message}", e)
             // Network errors → retry with backoff (up to WorkManager's limit)
             if (runAttemptCount < 3) {
                 Result.retry()

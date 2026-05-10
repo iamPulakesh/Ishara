@@ -4,8 +4,9 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.*
-import com.isharaai.isl.core.inference.ModelDownloadManager
-import com.isharaai.isl.core.inference.ModelDownloadWorker
+import com.isharaai.isl.R
+import com.isharaai.isl.core.model.ModelDownloadManager
+import com.isharaai.isl.core.model.ModelDownloadWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -65,7 +66,7 @@ class DownloadViewModel @Inject constructor(
                         }
                         WorkInfo.State.FAILED -> {
                             val errorMsg = info.outputData.getString(ModelDownloadWorker.KEY_ERROR)
-                                ?: "ডাউনলোড ব্যর্থ হয়েছে।"
+                                ?: getApplication<Application>().getString(R.string.download_failed)
                             _uiState.update {
                                 it.copy(isError = true, isDownloading = false, errorMessage = errorMsg)
                             }

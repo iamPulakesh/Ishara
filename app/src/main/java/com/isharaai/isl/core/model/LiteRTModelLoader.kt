@@ -1,6 +1,7 @@
-package com.isharaai.isl.core.inference
+package com.isharaai.isl.core.model
 
 import android.content.Context
+import android.util.Log
 import com.google.ai.edge.litertlm.Backend
 import com.google.ai.edge.litertlm.Engine
 import com.google.ai.edge.litertlm.EngineConfig
@@ -34,7 +35,7 @@ object LiteRTModelLoader {
         val modelFile = ModelDownloadManager.getModelFile(context)
         require(modelFile.exists()) { "Model file not found at ${modelFile.absolutePath}. Download required." }
 
-        android.util.Log.i("LiteRTLoader", "Loading model from: ${modelFile.absolutePath} (${modelFile.length() / 1024 / 1024} MB)")
+        Log.i("LiteRTLoader", "Loading model from: ${modelFile.absolutePath} (${modelFile.length() / 1024 / 1024} MB)")
 
         val config = EngineConfig(
             modelPath = modelFile.absolutePath,
@@ -50,12 +51,8 @@ object LiteRTModelLoader {
 
         val eng = Engine(config)
         eng.initialize()
-        android.util.Log.i("LiteRTLoader", "Engine initialized successfully")
+        Log.i("LiteRTLoader", "Engine initialized successfully")
         return eng
     }
 
-    fun release() {
-        engine?.close()
-        engine = null
-    }
 }

@@ -10,15 +10,15 @@ import androidx.room.RoomDatabase
     version = 3,
     exportSchema = false
 )
-abstract class SignDatabase : RoomDatabase() {
+abstract class IsharaDatabase : RoomDatabase() {
 
     abstract fun chatDao(): ChatDao
 
     companion object {
-        fun create(context: Context): SignDatabase {
+        fun create(context: Context): IsharaDatabase {
             return Room.databaseBuilder(
                 context,
-                SignDatabase::class.java,
+                IsharaDatabase::class.java,
                 "ishara_signs.db"
             )
             .fallbackToDestructiveMigration(dropAllTables = true)

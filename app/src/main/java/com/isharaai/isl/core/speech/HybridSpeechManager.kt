@@ -26,6 +26,13 @@ enum class SpeechLanguage(
     ENGLISH("en-US", "sherpa-en", "EN");
 }
 
+private data class SherpaModelFiles(
+    val encoder: String,
+    val decoder: String,
+    val joiner: String,
+    val modelType: String
+)
+
 /**
  * Hybrid Speech Manager: routes between online (Google) and offline (Sherpa-ONNX).
  *
@@ -207,48 +214,7 @@ class HybridSpeechManager(private val context: Context) {
         if (sherpaRecognizer != null) return
 
         Log.i(TAG, "Initializing Sherpa-ONNX model: ${language.sherpaModelDir}")
-        val modelDir = language.sherpaModelDir
-
-        val config = when (language) {
-            SpeechLanguage.BENGALI -> OnlineRecognizerConfig(
-                featConfig = FeatureConfig(sampleRate = SAMPLE_RATE, featureDim = 80),
-                modelConfig = OnlineModelConfig(
-                    transducer = OnlineTransducerModelConfig(
-                        encoder = "$modelDir/encoder.onnx",
-                        decoder = "$modelDir/decoder.onnx",
-                        joiner = "$modelDir/joiner.onnx",
-                    ),
-                    tokens = "$modelDir/tokens.txt",
-                    numThreads = 2,
-                    modelType = "zipformer2",
-                ),
-                endpointConfig = EndpointConfig(
-                    rule1 = EndpointRule(false, 2.4f, 0.0f),
-                    rule2 = EndpointRule(true, 1.4f, 0.0f),
-                    rule3 = EndpointRule(false, 0.0f, 20.0f)
-                ),
-                enableEndpoint = true,
-            )
-            SpeechLanguage.ENGLISH -> OnlineRecognizerConfig(
-                featConfig = FeatureConfig(sampleRate = SAMPLE_RATE, featureDim = 80),
-                modelConfig = OnlineModelConfig(
-                    transducer = OnlineTransducerModelConfig(
-                        encoder = "$modelDir/encoder.int8.onnx",
-                        decoder = "$modelDir/decoder.onnx",
-                        joiner = "$modelDir/joiner.int8.onnx",
-                    ),
-                    tokens = "$modelDir/tokens.txt",
-                    numThreads = 2,
-                    modelType = "zipformer",
-                ),
-                endpointConfig = EndpointConfig(
-                    rule1 = EndpointRule(false, 2.4f, 0.0f),
-                    rule2 = EndpointRule(true, 1.4f, 0.0f),
-                    rule3 = EndpointRule(false, 0.0f, 20.0f)
-                ),
-                enableEndpoint = true,
-            )
-        }
+        val config = buildSherpaConfig(language)
 
         sherpaRecognizer = OnlineRecognizer(
             assetManager = context.assets,
@@ -256,6 +222,44 @@ class HybridSpeechManager(private val context: Context) {
         )
         sherpaLoadedLang = language
         Log.i(TAG, "Sherpa-ONNX model initialized for ${language.name}")
+    }
+
+    private fun buildSherpaConfig(language: SpeechLanguage): OnlineRecognizerConfig {
+        val modelDir = language.sherpaModelDir
+        val files = when (language) {
+            SpeechLanguage.BENGALI -> SherpaModelFiles(
+                encoder = "encoder.onnx",
+                decoder = "decoder.onnx",
+                joiner = "joiner.onnx",
+                modelType = "zipformer2"
+            )
+            SpeechLanguage.ENGLISH -> SherpaModelFiles(
+                encoder = "encoder.int8.onnx",
+                decoder = "decoder.onnx",
+                joiner = "joiner.int8.onnx",
+                modelType = "zipformer"
+            )
+        }
+
+        return OnlineRecognizerConfig(
+            featConfig = FeatureConfig(sampleRate = SAMPLE_RATE, featureDim = 80),
+            modelConfig = OnlineModelConfig(
+                transducer = OnlineTransducerModelConfig(
+                    encoder = "$modelDir/${files.encoder}",
+                    decoder = "$modelDir/${files.decoder}",
+                    joiner = "$modelDir/${files.joiner}",
+                ),
+                tokens = "$modelDir/tokens.txt",
+                numThreads = 2,
+                modelType = files.modelType,
+            ),
+            endpointConfig = EndpointConfig(
+                rule1 = EndpointRule(false, 2.4f, 0.0f),
+                rule2 = EndpointRule(true, 1.4f, 0.0f),
+                rule3 = EndpointRule(false, 0.0f, 20.0f)
+            ),
+            enableEndpoint = true,
+        )
     }
 
     private fun startOffline() {

@@ -13,7 +13,6 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class CameraUiState(
-    val isLoading: Boolean = false,
     val error: String? = null
 )
 
@@ -37,12 +36,12 @@ class CameraViewModel @Inject constructor(
     // Capture a photo and return the Bitmap via callback
     fun capturePhoto(onCaptured: (Bitmap) -> Unit) {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null) }
+            _uiState.update { it.copy(error = null) }
             try {
                 val bitmap = cameraManager.capturePhoto()
                 onCaptured(bitmap)
             } catch (e: Exception) {
-                _uiState.update { it.copy(isLoading = false, error = "Capture failed: ${e.message}") }
+                _uiState.update { it.copy(error = "Capture failed: ${e.message}") }
             }
         }
     }

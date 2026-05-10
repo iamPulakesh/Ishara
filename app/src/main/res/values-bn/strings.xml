@@ -14,6 +14,8 @@
     <string name="btn_download_start">ডাউনলোড শুরু করুন</string>
     <string name="btn_retry">আবার চেষ্টা করুন</string>
     <string name="btn_download">ডাউনলোড করুন</string>
+    <string name="download_failed">ডাউনলোড ব্যর্থ হয়েছে।</string>
+    <string name="download_notification">AI মডেল ডাউনলোড হচ্ছে…</string>
 
     <!-- Camera Screen -->
     <string name="analyzing">বিশ্লেষণ করা হচ্ছে...</string>

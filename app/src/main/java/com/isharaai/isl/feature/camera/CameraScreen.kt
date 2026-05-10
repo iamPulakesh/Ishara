@@ -1,12 +1,14 @@
 package com.isharaai.isl.feature.camera
 
 import android.Manifest
-import android.graphics.Bitmap
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,13 +21,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.isharaai.isl.R
-import java.io.File
-import java.io.FileOutputStream
+import com.isharaai.isl.feature.chat.service.ChatImageStore
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun CameraScreen(
     onPhotoCaptured: (String) -> Unit,
-    onBack: () -> Unit,
     viewModel: CameraViewModel = hiltViewModel()
 ) {
     var hasCameraPermission by remember { mutableStateOf(false) }
@@ -33,6 +36,7 @@ fun CameraScreen(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     var isCapturing by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -61,15 +65,19 @@ fun CameraScreen(
                     if (!isCapturing) {
                         isCapturing = true
                         viewModel.capturePhoto { bitmap ->
-                            // Save bitmap to persistent storage
-                            val imagesDir = File(context.filesDir, "chat_images").apply { mkdirs() }
-                            val file = File(imagesDir, "capture_${System.currentTimeMillis()}.jpg")
-                            FileOutputStream(file).use { out ->
-                                bitmap.compress(Bitmap.CompressFormat.JPEG, 85, out)
+                            scope.launch {
+                                try {
+                                    val filePath = withContext(Dispatchers.IO) {
+                                        ChatImageStore.saveCameraImage(context, bitmap)
+                                    }
+                                    onPhotoCaptured(filePath)
+                                } catch (e: Exception) {
+                                    Log.e("CameraScreen", "Failed to save captured image", e)
+                                } finally {
+                                    bitmap.recycle()
+                                    isCapturing = false
+                                }
                             }
-                            bitmap.recycle()
-                            // Navigate back to chat with the file path
-                            onPhotoCaptured(file.absolutePath)
                         }
                     }
                 },
@@ -82,7 +90,7 @@ fun CameraScreen(
                 elevation = ButtonDefaults.buttonElevation(defaultElevation = 8.dp),
                 enabled = !isCapturing
             ) {
-                Text("📷", style = MaterialTheme.typography.labelLarge)
+                Icon(Icons.Default.PhotoCamera, contentDescription = "Capture", modifier = Modifier.size(32.dp), tint = Color.DarkGray)
             }
         } else {
             Box(

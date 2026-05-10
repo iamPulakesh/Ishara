@@ -2,7 +2,6 @@ package com.isharaai.isl.feature.chat
 
 import android.net.Uri
 import android.util.Log
-import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -32,7 +31,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.isharaai.isl.R
 import com.isharaai.isl.core.theme.*
-import com.isharaai.isl.feature.onboarding.registerTarget
+import com.isharaai.isl.core.tutorial.registerTarget
+import com.isharaai.isl.feature.chat.service.ChatImageStore
 
 @Composable
 fun ChatScreen(
@@ -56,14 +56,7 @@ fun ChatScreen(
             scope.launch {
                 try {
                     val filePath = withContext(Dispatchers.IO) {
-                        val inputStream = context.contentResolver.openInputStream(it)
-                        val file = File(context.filesDir, "gallery_${System.currentTimeMillis()}.jpg")
-                        inputStream?.use { input ->
-                            file.outputStream().use { output ->
-                                input.copyTo(output)
-                            }
-                        }
-                        file.absolutePath
+                        ChatImageStore.saveGalleryImage(context, it)
                     }
                     viewModel.sendImage(filePath)
                 } catch (e: Exception) {

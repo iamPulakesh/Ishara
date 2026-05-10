@@ -1,24 +1,11 @@
 package com.isharaai.isl.feature.onboarding
 
-import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.layout.LayoutCoordinates
-import androidx.compose.ui.layout.boundsInRoot
-
 /** A single step in the interactive tutorial. */
 data class TutorialStep(
     val targetKey: String,
     val descEn: String,
     val descBn: String
 )
-
-/** Shared map of tutorial target keys → screen‑space bounds. */
-val tutorialTargets = mutableStateMapOf<String, Rect>()
-
-/** Call from Modifier.onGloballyPositioned to register a target. */
-fun registerTarget(key: String, coords: LayoutCoordinates) {
-    tutorialTargets[key] = coords.boundsInRoot()
-}
 
 val TUTORIAL_STEPS = listOf(
     TutorialStep("chat_input", "Type your message here to talk with Ishara", "এখানে টাইপ করে ইশারার সাথে কথা বলুন"),

@@ -2,7 +2,7 @@ package com.isharaai.isl.feature.history
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.isharaai.isl.feature.chat.ChatRepository
+import com.isharaai.isl.core.db.ChatRepository
 import com.isharaai.isl.core.db.ChatSessionEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow

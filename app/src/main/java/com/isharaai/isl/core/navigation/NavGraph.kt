@@ -8,7 +8,7 @@ import androidx.navigation.compose.*
 import com.isharaai.isl.feature.camera.CameraScreen
 import com.isharaai.isl.feature.chat.ChatScreen
 import com.isharaai.isl.feature.chat.ChatViewModel
-import com.isharaai.isl.feature.download.SplashDownloadScreen
+import com.isharaai.isl.feature.download.DownloadScreen
 import com.isharaai.isl.feature.history.HistoryScreen
 import com.isharaai.isl.feature.onboarding.OnboardingScreen
 import com.isharaai.isl.feature.onboarding.TutorialOverlay
@@ -16,7 +16,7 @@ import com.isharaai.isl.feature.onboarding.isOnboardingCompleted
 import com.isharaai.isl.feature.onboarding.isTutorialPending
 import com.isharaai.isl.feature.onboarding.setTutorialPending
 import com.isharaai.isl.feature.settings.SettingsScreen
-import com.isharaai.isl.feature.addusersigns.UserSignsScreen
+import com.isharaai.isl.feature.usersigns.UserSignsScreen
 
 sealed class Screen(val route: String) {
     object Onboarding : Screen("onboarding")
@@ -93,7 +93,7 @@ fun IsharaAINavGraph() {
         }
 
         composable(Screen.Download.route) {
-            SplashDownloadScreen(
+            DownloadScreen(
                 onDownloadComplete = { navController.popBackStack() }
             )
         }
@@ -137,8 +137,7 @@ fun IsharaAINavGraph() {
                         ?.savedStateHandle
                         ?.set(IMAGE_RESULT_KEY, imagePath)
                     navController.popBackStack()
-                },
-                onBack = { navController.popBackStack() }
+                }
             )
         }
 

@@ -1,8 +1,5 @@
-package com.isharaai.isl.feature.chat
+package com.isharaai.isl.core.db
 
-import com.isharaai.isl.core.db.ChatDao
-import com.isharaai.isl.core.db.ChatMessageEntity
-import com.isharaai.isl.core.db.ChatSessionEntity
 import kotlinx.coroutines.flow.Flow
 import java.io.File
 import javax.inject.Inject
@@ -32,23 +29,20 @@ class ChatRepository @Inject constructor(
      * image files from disk.
      */
     suspend fun deleteSession(sessionId: String) {
-        // Get all image paths before deleting from DB
         val imagePaths = chatDao.getImagePathsForSession(sessionId)
-
-        // Delete session (messages cascade-deleted)
         chatDao.deleteSession(sessionId)
-
-        // Delete image files from disk
-        imagePaths.forEach { path ->
-            try { File(path).delete() } catch (_: Exception) { }
-        }
+        deleteImageFiles(imagePaths)
     }
 
     /** Deletes all sessions except the current session. */
     suspend fun deleteAllSessionsExcept(excludeId: String) {
         val imagePaths = chatDao.getAllImagePathsExcept(excludeId)
         chatDao.deleteAllSessionsExcept(excludeId)
-        imagePaths.forEach { path ->
+        deleteImageFiles(imagePaths)
+    }
+
+    private fun deleteImageFiles(paths: List<String>) {
+        paths.forEach { path ->
             try { File(path).delete() } catch (_: Exception) { }
         }
     }
@@ -57,9 +51,6 @@ class ChatRepository @Inject constructor(
 
     suspend fun getMessagesForSession(sessionId: String): List<ChatMessageEntity> =
         chatDao.getMessagesForSession(sessionId)
-
-    fun getMessagesForSessionFlow(sessionId: String): Flow<List<ChatMessageEntity>> =
-        chatDao.getMessagesForSessionFlow(sessionId)
 
     suspend fun insertMessage(message: ChatMessageEntity) =
         chatDao.insertMessage(message)

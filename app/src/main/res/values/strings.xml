@@ -14,6 +14,8 @@
     <string name="btn_download_start">Start Download</string>
     <string name="btn_retry">Try Again</string>
     <string name="btn_download">Download</string>
+    <string name="download_failed">Download failed.</string>
+    <string name="download_notification">Downloading AI model…</string>
 
     <!-- Camera Screen -->
     <string name="analyzing">Analyzing…</string>

@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.isharaai.isl.R
 import com.isharaai.isl.core.theme.*
-import com.isharaai.isl.feature.chat.isl.ISLMessageContent
+import com.isharaai.isl.feature.chat.signplayer.ISLMessageContent
 
 // Chat Bubble
 

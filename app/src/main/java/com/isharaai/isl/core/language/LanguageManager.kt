@@ -1,4 +1,4 @@
-package com.isharaai.isl.feature.settings
+package com.isharaai.isl.core.language
 
 import android.content.Context
 import android.content.SharedPreferences

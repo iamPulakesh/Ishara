@@ -1,24 +1,20 @@
-package com.isharaai.isl.feature.addusersigns
+package com.isharaai.isl.feature.usersigns
 
 import android.content.Intent
 import android.provider.MediaStore
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -28,9 +24,10 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import com.isharaai.isl.R
 import com.isharaai.isl.core.theme.*
+import com.isharaai.isl.core.ui.IsharaListCard
+import com.isharaai.isl.core.ui.IsharaTopAppBar
 import java.io.File
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserSignsScreen(onBack: () -> Unit) {
     val context = LocalContext.current
@@ -61,14 +58,9 @@ fun UserSignsScreen(onBack: () -> Unit) {
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.my_signs_title), fontWeight = FontWeight.Bold, color = Color.White) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = AppGreen)
+            IsharaTopAppBar(
+                title = stringResource(R.string.my_signs_title),
+                onBack = onBack
             )
         },
         floatingActionButton = {
@@ -90,21 +82,14 @@ fun UserSignsScreen(onBack: () -> Unit) {
         } else {
             LazyColumn(Modifier.fillMaxSize().padding(padding).padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(signs) { word ->
-                    Card(
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(containerColor = CardWhite),
-                        elevation = CardDefaults.cardElevation(2.dp)
+                    IsharaListCard(
+                        cornerRadius = 12.dp,
+                        elevation = 2.dp,
+                        contentPadding = 16.dp
                     ) {
-                        Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Box(
-                                Modifier.size(40.dp).clip(RoundedCornerShape(8.dp)).background(AppGreen.copy(alpha = 0.1f)),
-                                contentAlignment = Alignment.Center
-                            ) { Text("🤟", fontSize = 20.sp) }
-                            Spacer(Modifier.width(12.dp))
-                            Text(word, Modifier.weight(1f), fontWeight = FontWeight.SemiBold, color = TextDark)
-                            IconButton(onClick = { deleteTarget = word }) {
-                                Icon(Icons.Default.Delete, "Delete", tint = Color.Red.copy(alpha = 0.7f))
-                            }
+                        Text(word, Modifier.weight(1f), fontWeight = FontWeight.SemiBold, color = TextDark)
+                        IconButton(onClick = { deleteTarget = word }) {
+                            Icon(Icons.Default.Delete, "Delete", tint = Color.Red.copy(alpha = 0.7f))
                         }
                     }
                 }

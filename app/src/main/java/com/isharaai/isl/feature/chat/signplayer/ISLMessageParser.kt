@@ -1,4 +1,4 @@
-package com.isharaai.isl.feature.chat.isl
+package com.isharaai.isl.feature.chat.signplayer
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

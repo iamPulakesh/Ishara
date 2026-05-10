@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.sp
 import com.isharaai.isl.R
 import com.isharaai.isl.core.speech.SpeechLanguage
 import com.isharaai.isl.core.theme.*
-import com.isharaai.isl.feature.onboarding.registerTarget
+import com.isharaai.isl.core.tutorial.registerTarget
 
 /**
  * The chat input bar with text field, gallery attach, camera,

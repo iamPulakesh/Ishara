@@ -1,24 +1,20 @@
 package com.isharaai.isl.feature.chat
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.ai.edge.litertlm.Content
 import com.google.ai.edge.litertlm.Contents
-import com.google.ai.edge.litertlm.Conversation
-import com.google.ai.edge.litertlm.ConversationConfig
 import com.google.ai.edge.litertlm.Message
 import com.isharaai.isl.R
-import com.isharaai.isl.core.db.ChatMessageEntity
-import com.isharaai.isl.core.db.ChatSessionEntity
-import com.isharaai.isl.core.inference.LiteRTModelLoader
-import com.isharaai.isl.core.inference.ModelDownloadManager
+import com.isharaai.isl.core.model.ModelDownloadManager
 import com.isharaai.isl.core.speech.HybridSpeechManager
 import com.isharaai.isl.core.speech.SpeechLanguage
+import com.isharaai.isl.feature.chat.service.ImageProcessor
+import com.isharaai.isl.feature.chat.service.InferenceService
+import com.isharaai.isl.feature.chat.service.SessionService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -27,51 +23,20 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.ByteArrayOutputStream
 import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val chatRepository: ChatRepository
+    private val sessionService: SessionService,
+    private val inferenceService: InferenceService
 ) : ViewModel() {
 
-    companion object {
-        private const val TAG = "ChatViewModel"
-
-        /**
-         * System prompt that instructs the Gemma model to act as an ISL assistant.
-         */
-        private val ISL_SYSTEM_PROMPT = """
-            You are Ishara, a friendly AI assistant that helps people learn Indian Sign Language (ISL).
-            You are fluent in English and Bengali (বাংলা).
-
-            CORE RULES:
-            1. By default, answer ALL questions normally like a helpful chatbot. Do NOT include ISL tags.
-            2. ONLY when the user explicitly asks for "sign language", "sign bhasa", "ISL", a "sign" for a word/alphabet, "সাইন ভাষা", "সাইন", or "ইশারা", you MUST include an ISL translation tag in your response using this exact format (SPACE SEPARATED, NO COMMAS):
-               [[ISL: WORD1 WORD2 WORD3]]
-            3. ISL uses Subject-Object-Verb (SOV) grammar, which is DIFFERENT from English (SVO).
-               Examples:
-               - "How do I say 'What is your name' in sign language?" → Here is the sign: [[ISL: YOUR NAME WHAT]]
-               - "sign bhasa te 'I want water' ki hobe?" → [[ISL: I WATER WANT]]
-               - "Hospital kothay ISL e ki hobe?" → [[ISL: HOSPITAL WHERE]]
-            4. For individual alphabets (A-Z) or numbers, NEVER give long explanations. ALWAYS provide the direct sign tag immediately.
-               For numbers, ALWAYS use the numeric digit (0-9) inside the tag, NEVER the spelled-out English word.
-               Examples:
-               - "Just A give me the sign or alphabet A" → [[ISL: A]]
-               - "Sign for 0" → [[ISL: 0]]
-               - "Sign for zero" → [[ISL: 0]]
-            5. Always use UPPERCASE English words inside the ISL tags, even if the user speaks Bengali.
-            6. Keep responses extremely concise and helpful. Do not lecture about how ISL works.
-            7. Reply in the same language the user used (English or Bengali).
-        """.trimIndent()
-    }
+    companion object { private const val TAG = "ChatViewModel" }
 
     private val _uiState = MutableStateFlow(ChatUiState())
     val uiState = _uiState.asStateFlow()
-
-    private var conversation: Conversation? = null
 
     init {
         startNewSession()
@@ -79,83 +44,48 @@ class ChatViewModel @Inject constructor(
         preloadEngine()
     }
 
-    // Pre-load the engine in the background so the first prompt is faster.
     private fun preloadEngine() {
         if (!ModelDownloadManager.isModelReady(context)) return
-        viewModelScope.launch {
-            try { ensureConversation() } catch (_: Exception) { }
-        }
+        viewModelScope.launch { try { inferenceService.ensureReady() } catch (_: Exception) {} }
     }
 
-    // Creates a new chat session 
-    fun startNewSession(title: String = "New Chat") {
-        val sessionId = UUID.randomUUID().toString()
-        val now = System.currentTimeMillis()
-
-        _uiState.update {
-            ChatUiState(
-                sessionId = sessionId,
-                isModelReady = ModelDownloadManager.isModelReady(context)
-            )
-        }
-        conversation?.close()
-        conversation = null
-
-        viewModelScope.launch {
-            chatRepository.insertSession(
-                ChatSessionEntity(
-                    id = sessionId,
-                    title = title.ifBlank { "New Chat" },
-                    createdAt = now,
-                    updatedAt = now
-                )
-            )
-        }
-
-        // Add welcome message
-        val welcomeRes = if (ModelDownloadManager.isModelReady(context)) {
-            R.string.chat_welcome
-        } else {
-            R.string.chat_welcome_no_model
-        }
-        addSystemMessage(welcomeRes)
+    fun refreshModelStatus() {
+        _uiState.update { it.copy(isModelReady = ModelDownloadManager.isModelReady(context)) }
     }
 
-    // Load an existing session from history
+    // Session management
+
+    fun startNewSession(title: String = SessionService.DEFAULT_SESSION_TITLE) {
+        inferenceService.close()
+        _uiState.update { ChatUiState(isModelReady = ModelDownloadManager.isModelReady(context)) }
+
+        viewModelScope.launch {
+            val id = sessionService.createSession(title)
+            _uiState.update { it.copy(sessionId = id) }
+        }
+
+        addSystemMessage(
+            if (ModelDownloadManager.isModelReady(context)) R.string.chat_welcome
+            else R.string.chat_welcome_no_model
+        )
+    }
+
     fun loadSession(sessionId: String) {
         viewModelScope.launch {
-            val messages = chatRepository.getMessagesForSession(sessionId)
-            val chatMessages = messages.map { entity ->
-                ChatMessage(
-                    id = entity.id,
-                    text = entity.text,
-                    stringResId = entity.stringResId,
-                    imagePath = entity.imagePath,
-                    isUser = entity.isUser,
-                    timestamp = entity.timestamp
-                )
-            }
-            _uiState.update {
-                it.copy(
-                    sessionId = sessionId,
-                    messages = chatMessages
-                )
-            }
+            val messages = sessionService.loadMessages(sessionId)
+            _uiState.update { it.copy(sessionId = sessionId, messages = messages) }
         }
     }
 
-    
-    fun refreshModelStatus() {
-        val ready = ModelDownloadManager.isModelReady(context)
-        _uiState.update { it.copy(isModelReady = ready) }
-    }
+    // Messaging
 
     fun sendMessage(text: String) {
         if (text.isBlank()) return
-        addUserMessage(text.trim())
-        updateSessionTitle(text.trim())
+        val trimmed = text.trim()
+        addUserMessage(trimmed)
+        viewModelScope.launch { sessionService.updateTitleIfNew(_uiState.value.sessionId, trimmed) }
         if (!_uiState.value.isModelReady) { addSystemMessage(R.string.chat_model_needed); return }
-        streamAiResponse(Message.user(text.trim()))
+        streamResponse(Message.user(trimmed))
     }
 
     fun sendImage(imagePath: String) {
@@ -164,41 +94,26 @@ class ChatViewModel @Inject constructor(
         persistMessage(msg)
         if (!_uiState.value.isModelReady) { addSystemMessage(R.string.chat_model_needed); return }
 
-        val scaledBytes = scaleImageToBytes(imagePath)
+        val scaledBytes = ImageProcessor.scaleToBytes(imagePath)
         val prompt = "Identify the main object or action in this image. " +
             "Reply ONLY with the exact ISL sign using this tag format: [[ISL: OBJECT_NAME]]. " +
             "Do not include any other text, natural description, or explanation."
-        streamAiResponse(Message.user(Contents.of(Content.ImageBytes(scaledBytes), Content.Text(prompt))))
+        streamResponse(Message.user(Contents.of(Content.ImageBytes(scaledBytes), Content.Text(prompt))))
     }
 
-    // Shared streaming helper 
-
-    private suspend fun ensureConversation(): Conversation {
-        return conversation ?: LiteRTModelLoader.getOrLoad(context)
-            .createConversation(ConversationConfig(systemInstruction = Contents.of(ISL_SYSTEM_PROMPT)))
-            .also { conversation = it }
-    }
-
-    private fun streamAiResponse(inputMessage: Message) {
+    private fun streamResponse(message: Message) {
         val msgId = UUID.randomUUID().toString()
         _uiState.update { it.copy(messages = it.messages + ChatMessage(id = msgId, text = "", isUser = false), isGenerating = true) }
 
         viewModelScope.launch(Dispatchers.Default) {
             try {
-                val conv = ensureConversation()
-                val buf = StringBuilder()
-
-                conv.sendMessageAsync(inputMessage).collect { partial ->
-                    buf.append(partial.contents.contents.filterIsInstance<Content.Text>().joinToString("") { it.text })
-                    val snap = buf.toString()
+                inferenceService.streamResponse(message).collect { snapshot ->
                     withContext(Dispatchers.Main) {
-                        _uiState.update { s -> s.copy(messages = s.messages.map { if (it.id == msgId) it.copy(text = snap) else it }) }
+                        _uiState.update { s -> s.copy(messages = s.messages.map { if (it.id == msgId) it.copy(text = snapshot) else it }) }
                     }
                 }
-
-                val finalText = buf.toString().ifBlank { "..." }
+                val finalText = _uiState.value.messages.find { it.id == msgId }?.text?.ifBlank { "..." } ?: "..."
                 withContext(Dispatchers.Main) {
-                    _uiState.update { s -> s.copy(messages = s.messages.map { if (it.id == msgId) it.copy(text = finalText) else it }) }
                     persistMessage(ChatMessage(id = msgId, text = finalText, isUser = false))
                 }
             } catch (e: Exception) {
@@ -213,38 +128,7 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    // Scale camera images to avoid native OOM crashes in LiteRT
-    private fun scaleImageToBytes(path: String): ByteArray {
-        val original = BitmapFactory.decodeFile(path) ?: throw IllegalStateException("Failed to decode image")
-        try {
-            val maxDim = 384
-            val scale = maxDim.toFloat() / maxOf(original.width, original.height)
-
-            // No scaling needed — compress original directly
-            if (scale >= 1f) {
-                val out = ByteArrayOutputStream()
-                original.compress(Bitmap.CompressFormat.JPEG, 90, out)
-                return out.toByteArray()
-            }
-
-            // Downscale to fit within maxDim
-            val scaled = Bitmap.createScaledBitmap(
-                original,
-                (original.width * scale).toInt(),
-                (original.height * scale).toInt(),
-                true
-            )
-            try {
-                val out = ByteArrayOutputStream()
-                scaled.compress(Bitmap.CompressFormat.JPEG, 90, out)
-                return out.toByteArray()
-            } finally {
-                scaled.recycle()
-            }
-        } finally {
-            original.recycle()
-        }
-    }
+    // Helper: add messages to UI + persist
 
     private fun addUserMessage(text: String) {
         val msg = ChatMessage(text = text, isUser = true)
@@ -252,60 +136,22 @@ class ChatViewModel @Inject constructor(
         persistMessage(msg)
     }
 
-    // System message using a string resource (locale-reactive) 
     private fun addSystemMessage(@StringRes resId: Int) {
         val msg = ChatMessage(stringResId = resId, isUser = false)
         _uiState.update { it.copy(messages = it.messages + msg) }
         persistMessage(msg)
     }
 
-    // Save message to Room database 
     private fun persistMessage(msg: ChatMessage) {
         val sessionId = _uiState.value.sessionId
-        if (sessionId.isEmpty()) return
-
-        viewModelScope.launch {
-            chatRepository.insertMessage(
-                ChatMessageEntity(
-                    id = msg.id,
-                    sessionId = sessionId,
-                    text = msg.text,
-                    stringResId = msg.stringResId,
-                    imagePath = msg.imagePath,
-                    isUser = msg.isUser,
-                    timestamp = msg.timestamp
-                )
-            )
-            // Update session timestamp
-            chatRepository.getSession(sessionId)?.let { session ->
-                chatRepository.updateSession(session.copy(updatedAt = msg.timestamp))
-            }
-        }
+        viewModelScope.launch { sessionService.persistMessage(sessionId, msg) }
     }
 
-    // Set session title from first user message 
-    private fun updateSessionTitle(firstMessage: String) {
-        val sessionId = _uiState.value.sessionId
-        // Only update title if it's still "New Chat"
-        viewModelScope.launch {
-            chatRepository.getSession(sessionId)?.let { session ->
-                if (session.title == "New Chat") {
-                    val title = firstMessage.take(40).let {
-                        if (firstMessage.length > 40) "$it…" else it
-                    }
-                    chatRepository.updateSession(session.copy(title = title))
-                }
-            }
-        }
-    }
-
-    // Hybrid Speech Recognition 
+    // Speech recognition
 
     private val speechManager = HybridSpeechManager(context).apply {
         setListener(object : HybridSpeechManager.Listener {
-            override fun onPartialResult(text: String) {
-                _uiState.update { it.copy(partialTranscript = text) }
-            }
+            override fun onPartialResult(text: String) { _uiState.update { it.copy(partialTranscript = text) } }
             override fun onFinalResult(text: String) {
                 _uiState.update { it.copy(isRecording = false, partialTranscript = "") }
                 if (text.isNotBlank()) sendMessage(text)
@@ -326,13 +172,12 @@ class ChatViewModel @Inject constructor(
     fun stopRecording() {
         val finalText = speechManager.stop()
         _uiState.update { it.copy(isRecording = false, partialTranscript = "") }
-        if (finalText.isNotBlank()) {
-            sendMessage(finalText)
-        }
+        if (finalText.isNotBlank()) sendMessage(finalText)
     }
 
     override fun onCleared() {
         super.onCleared()
+        inferenceService.close()
         speechManager.release()
     }
 }

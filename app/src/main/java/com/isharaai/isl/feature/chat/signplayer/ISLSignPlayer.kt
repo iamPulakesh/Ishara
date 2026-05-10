@@ -1,9 +1,6 @@
-package com.isharaai.isl.feature.chat.isl
+package com.isharaai.isl.feature.chat.signplayer
 
-import android.net.Uri
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -16,25 +13,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import com.isharaai.isl.core.theme.*
-import com.isharaai.isl.feature.addusersigns.UserSignManager
-import androidx.compose.ui.input.pointer.pointerInput
+import com.isharaai.isl.feature.usersigns.UserSignManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
-import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.ui.PlayerView
 
 /** Resolves a sign key to a URI string — checks bundled res/raw first, then user signs. */
 private fun resolveSignUri(context: android.content.Context, key: String): String {
-    val resId = context.resources.getIdentifier("sign_$key", "raw", context.packageName)
-    if (resId != 0) return "android.resource://${context.packageName}/$resId"
-    val userFile = UserSignManager.getSignFile(context, key)
-    if (userFile != null) return Uri.fromFile(userFile).toString()
-    return ""
+    return UserSignManager.resolveSignUri(context, key)
 }
 
 @Composable
@@ -131,63 +118,20 @@ fun ISLSignPlayerCard(words: List<String>) {
 @Composable
 fun ISLSequentialPlayer(wordVideoMap: List<Pair<String, String>>, replayTrigger: Int = 0, onClick: () -> Unit = {}) {
     if (wordVideoMap.isEmpty()) return
-    val context = LocalContext.current
-    var currentIndex by remember { mutableIntStateOf(0) }
-    var hasPlayed by remember { mutableStateOf(false) }
-
-    val exoPlayer = remember { ExoPlayer.Builder(context).build().apply { repeatMode = Player.REPEAT_MODE_OFF } }
-
-    LaunchedEffect(replayTrigger) {
-        if (replayTrigger > 0) { currentIndex = 0; hasPlayed = false }
-    }
-
-    LaunchedEffect(currentIndex, replayTrigger, hasPlayed) {
-        if (hasPlayed) return@LaunchedEffect
-        val entry = wordVideoMap.getOrNull(currentIndex) ?: return@LaunchedEffect
-        exoPlayer.setMediaItem(MediaItem.fromUri(Uri.parse(entry.second)))
-        exoPlayer.prepare()
-        exoPlayer.playWhenReady = true
-    }
-
-    DisposableEffect(exoPlayer) {
-        val listener = object : Player.Listener {
-            override fun onPlaybackStateChanged(state: Int) {
-                if (state == Player.STATE_ENDED) {
-                    if (currentIndex < wordVideoMap.size - 1) currentIndex++
-                    else hasPlayed = true
-                }
-            }
-        }
-        exoPlayer.addListener(listener)
-        onDispose { exoPlayer.removeListener(listener); exoPlayer.release() }
-    }
-
-    Box(
+    SequentialSignVideoPlayer(
+        wordVideoMap = wordVideoMap,
+        replayTrigger = replayTrigger,
+        enableSwipe = true,
+        onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(16f / 9f)
             .clip(RoundedCornerShape(8.dp))
             .background(Color.Black)
-            .pointerInput(Unit) {
-                var totalDrag = 0f
-                detectHorizontalDragGestures(
-                    onDragStart = { totalDrag = 0f },
-                    onDragEnd = {
-                        if (totalDrag < -80 && currentIndex < wordVideoMap.size - 1) {
-                            currentIndex++; hasPlayed = false
-                        } else if (totalDrag > 80 && currentIndex > 0) {
-                            currentIndex--; hasPlayed = false
-                        }
-                    },
-                    onHorizontalDrag = { change, dragAmount -> change.consume(); totalDrag += dragAmount }
-                )
-            }
-            .clickable { onClick() }
-    ) {
-        AndroidView(factory = { PlayerView(it).apply { player = exoPlayer; useController = false } }, modifier = Modifier.fillMaxSize())
+    ) { state ->
         if (wordVideoMap.size > 1) {
             Surface(modifier = Modifier.align(Alignment.TopEnd).padding(6.dp), shape = RoundedCornerShape(8.dp), color = Color.Black.copy(alpha = 0.6f)) {
-                Text("${currentIndex + 1} / ${wordVideoMap.size}", modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp), fontSize = 10.sp, color = Color.White, fontWeight = FontWeight.Bold)
+                Text("${state.currentIndex + 1} / ${wordVideoMap.size}", modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp), fontSize = 10.sp, color = Color.White, fontWeight = FontWeight.Bold)
             }
         }
     }

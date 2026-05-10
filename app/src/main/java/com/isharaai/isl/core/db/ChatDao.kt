@@ -34,16 +34,9 @@ interface ChatDao {
     @Query("SELECT * FROM chat_messages WHERE sessionId = :sessionId ORDER BY timestamp ASC")
     suspend fun getMessagesForSession(sessionId: String): List<ChatMessageEntity>
 
-    @Query("SELECT * FROM chat_messages WHERE sessionId = :sessionId ORDER BY timestamp ASC")
-    fun getMessagesForSessionFlow(sessionId: String): Flow<List<ChatMessageEntity>>
-
     /** Get all image paths for a session */
     @Query("SELECT imagePath FROM chat_messages WHERE sessionId = :sessionId AND imagePath IS NOT NULL")
     suspend fun getImagePathsForSession(sessionId: String): List<String>
-
-    /** Get ALL image paths across all sessions */
-    @Query("SELECT imagePath FROM chat_messages WHERE imagePath IS NOT NULL")
-    suspend fun getAllImagePaths(): List<String>
 
     /** Get all image paths except those belonging to a specific session */
     @Query("SELECT imagePath FROM chat_messages WHERE imagePath IS NOT NULL AND sessionId != :excludeId")

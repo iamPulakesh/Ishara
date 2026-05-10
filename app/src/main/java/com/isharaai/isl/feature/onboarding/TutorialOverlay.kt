@@ -20,7 +20,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.isharaai.isl.feature.settings.LanguageManager
+import com.isharaai.isl.core.language.LanguageManager
+import com.isharaai.isl.core.tutorial.tutorialTargets
 import java.util.Locale
 
 @Composable

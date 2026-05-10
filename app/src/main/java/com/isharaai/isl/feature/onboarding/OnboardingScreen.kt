@@ -17,23 +17,26 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.isharaai.isl.feature.settings.LanguageManager
+import com.isharaai.isl.core.language.LanguageManager
 
 private const val PREF_NAME = "ishara_onboarding"
 private const val KEY_COMPLETED = "onboarding_completed"
 private const val KEY_TUTORIAL_PENDING = "tutorial_pending"
 
+private fun prefs(context: Context) =
+    context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
 fun isOnboardingCompleted(context: Context): Boolean =
-    context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE).getBoolean(KEY_COMPLETED, false)
+    prefs(context).getBoolean(KEY_COMPLETED, false)
 
 fun setOnboardingCompleted(context: Context) =
-    context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE).edit().putBoolean(KEY_COMPLETED, true).apply()
+    prefs(context).edit().putBoolean(KEY_COMPLETED, true).apply()
 
 fun isTutorialPending(context: Context): Boolean =
-    context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE).getBoolean(KEY_TUTORIAL_PENDING, false)
+    prefs(context).getBoolean(KEY_TUTORIAL_PENDING, false)
 
 fun setTutorialPending(context: Context, pending: Boolean) =
-    context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE).edit().putBoolean(KEY_TUTORIAL_PENDING, pending).apply()
+    prefs(context).edit().putBoolean(KEY_TUTORIAL_PENDING, pending).apply()
 
 @Composable
 fun OnboardingScreen(onComplete: (wantsTutorial: Boolean) -> Unit) {

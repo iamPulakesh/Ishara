@@ -1,4 +1,4 @@
-package com.isharaai.isl.core.inference
+package com.isharaai.isl.core.model
 
 import android.content.Context
 import com.isharaai.isl.BuildConfig

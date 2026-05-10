@@ -1,9 +1,9 @@
 package com.isharaai.isl.core.di
 
 import android.content.Context
-import com.isharaai.isl.feature.chat.ChatRepository
+import com.isharaai.isl.core.db.ChatRepository
 import com.isharaai.isl.core.db.ChatDao
-import com.isharaai.isl.core.db.SignDatabase
+import com.isharaai.isl.core.db.IsharaDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,7 +12,6 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
-
 
 // Hilt Module for dependency injection
 @Module
@@ -30,12 +29,12 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideSignDatabase(@ApplicationContext ctx: Context): SignDatabase =
-        SignDatabase.create(ctx)
+    fun provideDatabase(@ApplicationContext ctx: Context): IsharaDatabase =
+        IsharaDatabase.create(ctx)
 
     @Provides
     @Singleton
-    fun provideChatDao(db: SignDatabase): ChatDao =
+    fun provideChatDao(db: IsharaDatabase): ChatDao =
         db.chatDao()
 
     @Provides

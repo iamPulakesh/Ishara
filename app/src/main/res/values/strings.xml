@@ -84,4 +84,9 @@
     <string name="my_signs_delete_title">Delete Sign</string>
     <string name="my_signs_delete_confirm">Remove your recorded sign for \"%1$s\"?</string>
     <string name="my_signs_delete">Delete</string>
+
+    <!-- Attribution -->
+    <string name="attribution_title">Acknowledgement</string>
+    <string name="attribution_desc">ISL sign video credits</string>
+    <string name="attribution_islrtc">Some of the ISL sign language videos used in this app are sourced from the Indian Sign Language Research and Training Centre (ISLRTC), an autonomous body under the Department of Empowerment of Persons with Disabilities (DEPwD), Ministry of Social Justice &amp; Empowerment, Government of India.</string>
 </resources>

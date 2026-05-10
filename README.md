@@ -77,3 +77,10 @@ git clone https://github.com/iamPulakesh/Ishara.git
 cd Ishara
 ./gradlew installDebug
 ```
+
+---
+
+## Acknowledgements
+
+- **ISL Sign Videos** — The Indian Sign Language video resources used in this application are sourced from the [**Indian Sign Language Research and Training Centre (ISLRTC)**](https://islrtc.nic.in), an autonomous body under the Department of Empowerment of Persons with Disabilities (DEPwD), Ministry of Social Justice & Empowerment, Government of India.
+- **ISL Animated Videos Dataset** — Additional sign language videos sourced from the [**Indian Sign Language Animated Videos**](https://www.kaggle.com/datasets/koushikchouhan/indian-sign-language-animated-videos) dataset on Kaggle by Koushik Chouhan.

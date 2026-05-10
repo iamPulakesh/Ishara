@@ -55,28 +55,6 @@ fun SettingsScreen(
                 .padding(padding)
                 .padding(16.dp)
         ) {
-            // Chat History
-            SettingsItem(
-                icon = Icons.Default.History,
-                iconTint = PrimaryPurple,
-                title = stringResource(R.string.history_title),
-                description = stringResource(R.string.history_desc),
-                onClick = onHistoryClick
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // My Signs
-            SettingsItem(
-                icon = Icons.Default.Videocam,
-                iconTint = AppGreen,
-                title = stringResource(R.string.my_signs_title),
-                description = stringResource(R.string.my_signs_desc),
-                onClick = onMySignsClick
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
             // Language Selection Card
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -119,6 +97,28 @@ fun SettingsScreen(
                     )
                 }
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // My Signs
+            SettingsItem(
+                icon = Icons.Default.Videocam,
+                iconTint = AppGreen,
+                title = stringResource(R.string.my_signs_title),
+                description = stringResource(R.string.my_signs_desc),
+                onClick = onMySignsClick
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Chat History
+            SettingsItem(
+                icon = Icons.Default.History,
+                iconTint = PrimaryPurple,
+                title = stringResource(R.string.history_title),
+                description = stringResource(R.string.history_desc),
+                onClick = onHistoryClick
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 

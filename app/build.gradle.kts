@@ -1,5 +1,6 @@
 import java.io.FileOutputStream
 import java.net.URI
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -75,6 +76,11 @@ tasks.matching { it.name == "preBuild" }.configureEach {
     dependsOn("downloadSherpaFiles")
 }
 
+val localProps = Properties().apply {
+    val f = rootProject.file("local.properties")
+    if (f.exists()) load(f.inputStream())
+}
+
 android {
     namespace = "com.isharaai.isl"
     compileSdk = 35
@@ -91,7 +97,7 @@ android {
         buildConfigField("String", "MODEL_DOWNLOAD_URL",
             "\"https://pub-aa44556322c4453ca4f838e7f610ab58.r2.dev/gemma-4-E2B-it.litertlm\"")
         buildConfigField("String", "MODEL_SHA256",
-            "\"SKIP\"")  // Skip checksum until we compute the real SHA256
+            "\"ab7838cdfc8f77e54d8ca45eadceb20452d9f01e4bfade03e5dce27911b27e42\"")
         buildConfigField("long", "MODEL_SIZE_BYTES", "2772275200L")
 
         // Don't compress ONNX model files in assets (saves RAM at runtime)
@@ -102,10 +108,20 @@ android {
         noCompress += listOf("onnx", "txt")
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file(localProps.getProperty("RELEASE_STORE_FILE", "ishara-release.jks"))
+            storePassword = localProps.getProperty("RELEASE_STORE_PASSWORD", "")
+            keyAlias = localProps.getProperty("RELEASE_KEY_ALIAS", "ishara")
+            keyPassword = localProps.getProperty("RELEASE_KEY_PASSWORD", "")
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

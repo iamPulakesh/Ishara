@@ -58,9 +58,6 @@ class ChatRepository @Inject constructor(
     suspend fun getMessagesForSession(sessionId: String): List<ChatMessageEntity> =
         chatDao.getMessagesForSession(sessionId)
 
-    fun getMessagesForSessionFlow(sessionId: String): Flow<List<ChatMessageEntity>> =
-        chatDao.getMessagesForSessionFlow(sessionId)
-
     suspend fun insertMessage(message: ChatMessageEntity) =
         chatDao.insertMessage(message)
 }

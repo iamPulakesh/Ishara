@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ChatBubbleOutline
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -84,7 +85,12 @@ fun HistoryScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("💬", fontSize = 48.sp)
+                    Icon(
+                        imageVector = Icons.Default.ChatBubbleOutline,
+                        contentDescription = null,
+                        modifier = Modifier.size(48.dp),
+                        tint = TextMedium
+                    )
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
                         stringResource(R.string.history_empty),
@@ -192,7 +198,12 @@ private fun SessionCard(
                     .background(PrimaryPurple.copy(alpha = 0.1f)),
                 contentAlignment = Alignment.Center
             ) {
-                Text("💬", fontSize = 20.sp)
+                Icon(
+                    imageVector = Icons.Default.ChatBubbleOutline,
+                    contentDescription = null,
+                    modifier = Modifier.size(22.dp),
+                    tint = PrimaryPurple
+                )
             }
 
             Spacer(modifier = Modifier.width(12.dp))

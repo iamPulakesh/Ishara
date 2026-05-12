@@ -53,9 +53,4 @@ object LiteRTModelLoader {
         android.util.Log.i("LiteRTLoader", "Engine initialized successfully")
         return eng
     }
-
-    fun release() {
-        engine?.close()
-        engine = null
-    }
 }

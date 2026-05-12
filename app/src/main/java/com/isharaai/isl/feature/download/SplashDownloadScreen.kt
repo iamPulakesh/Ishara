@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.isharaai.isl.R
 import com.isharaai.isl.core.theme.*
-import com.isharaai.isl.feature.download.DownloadViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,11 +50,6 @@ fun SplashDownloadScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Animated download icon
-            Text("", fontSize = 64.sp)
-
-            Spacer(modifier = Modifier.height(16.dp))
-
             Text(
                 text = stringResource(R.string.download_title),
                 fontSize = 24.sp,

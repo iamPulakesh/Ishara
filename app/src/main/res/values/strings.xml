@@ -10,7 +10,7 @@
 
     <!-- Download Screen -->
     <string name="download_title">AI Model Download</string>
-    <string name="download_body">Download the AI model to start learning sign language (~2.58 GB). Use Wi-Fi.</string>
+    <string name="download_body">Download the AI model to start learning sign language (~2.58 GB).</string>
     <string name="btn_download_start">Start Download</string>
     <string name="btn_retry">Try Again</string>
     <string name="btn_download">Download</string>
@@ -82,4 +82,9 @@
     <string name="my_signs_delete_title">Delete Sign</string>
     <string name="my_signs_delete_confirm">Remove your recorded sign for \"%1$s\"?</string>
     <string name="my_signs_delete">Delete</string>
+
+    <!-- Attribution -->
+    <string name="attribution_title">Acknowledgement</string>
+    <string name="attribution_desc">ISL sign video credits</string>
+    <string name="attribution_islrtc">Some of the ISL sign language videos used in this app are sourced from the Indian Sign Language Research and Training Centre (ISLRTC), an autonomous body under the Department of Empowerment of Persons with Disabilities (DEPwD), Ministry of Social Justice &amp; Empowerment, Government of India.</string>
 </resources>

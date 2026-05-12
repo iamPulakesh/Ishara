@@ -96,11 +96,6 @@ fun UserSignsScreen(onBack: () -> Unit) {
                         elevation = CardDefaults.cardElevation(2.dp)
                     ) {
                         Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Box(
-                                Modifier.size(40.dp).clip(RoundedCornerShape(8.dp)).background(AppGreen.copy(alpha = 0.1f)),
-                                contentAlignment = Alignment.Center
-                            ) { Text("🤟", fontSize = 20.sp) }
-                            Spacer(Modifier.width(12.dp))
                             Text(word, Modifier.weight(1f), fontWeight = FontWeight.SemiBold, color = TextDark)
                             IconButton(onClick = { deleteTarget = word }) {
                                 Icon(Icons.Default.Delete, "Delete", tint = Color.Red.copy(alpha = 0.7f))

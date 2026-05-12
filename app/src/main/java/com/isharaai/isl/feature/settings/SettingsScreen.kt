@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Videocam
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.isharaai.isl.R
 import com.isharaai.isl.core.theme.*
+import androidx.compose.material.icons.filled.Info
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,49 +69,46 @@ fun SettingsScreen(
                 .padding(padding)
                 .padding(16.dp)
         ) {
-            // Chat History Card
+            // Language Selection Card
             Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(onClick = onHistoryClick),
+                modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = CardWhite),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(20.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(42.dp)
-                            .clip(RoundedCornerShape(10.dp))
-                            .background(PrimaryPurple.copy(alpha = 0.1f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.History,
-                            contentDescription = "History",
-                            tint = PrimaryPurple,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(14.dp))
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = stringResource(R.string.history_title),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold,
-                            color = TextDark
-                        )
-                        Text(
-                            text = stringResource(R.string.history_desc),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = TextMedium
-                        )
-                    }
+                Column(modifier = Modifier.padding(20.dp)) {
+                    Text(
+                        text = stringResource(R.string.language),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = TextDark
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // English option
+                    LanguageOption(
+                        label = "English",
+                        flag = "🇺🇸",
+                        isSelected = currentLang == LanguageManager.LANG_ENGLISH,
+                        onClick = {
+                            currentLang = LanguageManager.LANG_ENGLISH
+                            LanguageManager.setLanguage(context, LanguageManager.LANG_ENGLISH)
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Bengali option
+                    LanguageOption(
+                        label = "Bengali(বাংলা)",
+                        flag = "🇮🇳",
+                        isSelected = currentLang == LanguageManager.LANG_BENGALI,
+                        onClick = {
+                            currentLang = LanguageManager.LANG_BENGALI
+                            LanguageManager.setLanguage(context, LanguageManager.LANG_BENGALI)
+                        }
+                    )
                 }
             }
 
@@ -163,46 +162,49 @@ fun SettingsScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Language Selection Card
+            // Chat History Card
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onHistoryClick),
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = CardWhite),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
-                Column(modifier = Modifier.padding(20.dp)) {
-                    Text(
-                        text = stringResource(R.string.language),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = TextDark
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // English option
-                    LanguageOption(
-                        label = "English",
-                        flag = "🇺🇸",
-                        isSelected = currentLang == LanguageManager.LANG_ENGLISH,
-                        onClick = {
-                            currentLang = LanguageManager.LANG_ENGLISH
-                            LanguageManager.setLanguage(context, LanguageManager.LANG_ENGLISH)
-                        }
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Bengali option
-                    LanguageOption(
-                        label = "Bengali(বাংলা)",
-                        flag = "🇮🇳",
-                        isSelected = currentLang == LanguageManager.LANG_BENGALI,
-                        onClick = {
-                            currentLang = LanguageManager.LANG_BENGALI
-                            LanguageManager.setLanguage(context, LanguageManager.LANG_BENGALI)
-                        }
-                    )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(42.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(PrimaryPurple.copy(alpha = 0.1f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.History,
+                            contentDescription = "History",
+                            tint = PrimaryPurple,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(14.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = stringResource(R.string.history_title),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = TextDark
+                        )
+                        Text(
+                            text = stringResource(R.string.history_desc),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = TextMedium
+                        )
+                    }
                 }
             }
 
@@ -253,6 +255,41 @@ fun SettingsScreen(
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Attribution Card
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = CardWhite),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.Info,
+                            contentDescription = null,
+                            tint = PrimaryPurple,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(R.string.attribution_title),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = TextDark
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = stringResource(R.string.attribution_islrtc),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextMedium,
+                        lineHeight = 18.sp
+                    )
+                }
+            }
         }
     }
 }
@@ -288,7 +325,12 @@ private fun LanguageOption(
             modifier = Modifier.weight(1f)
         )
         if (isSelected) {
-            Text("✓", fontSize = 20.sp, color = PrimaryPurple)
+            Icon(
+                imageVector = Icons.Default.Check,
+                contentDescription = null,
+                tint = PrimaryPurple,
+                modifier = Modifier.size(20.dp)
+            )
         }
     }
 }

@@ -17,8 +17,8 @@ import com.isharaai.isl.core.db.ChatMessageEntity
 import com.isharaai.isl.core.db.ChatSessionEntity
 import com.isharaai.isl.core.inference.LiteRTModelLoader
 import com.isharaai.isl.core.inference.ModelDownloadManager
-import com.isharaai.isl.core.speech.HybridSpeechManager
-import com.isharaai.isl.core.speech.SpeechLanguage
+import com.isharaai.isl.speech.HybridSpeechManager
+import com.isharaai.isl.speech.SpeechLanguage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers

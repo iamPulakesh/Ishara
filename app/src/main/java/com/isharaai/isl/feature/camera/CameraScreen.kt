@@ -7,6 +7,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -82,7 +84,12 @@ fun CameraScreen(
                 elevation = ButtonDefaults.buttonElevation(defaultElevation = 8.dp),
                 enabled = !isCapturing
             ) {
-                Text("📷", style = MaterialTheme.typography.labelLarge)
+                Icon(
+                    imageVector = Icons.Default.PhotoCamera,
+                    contentDescription = "Capture",
+                    modifier = Modifier.size(36.dp),
+                    tint = Color.DarkGray
+                )
             }
         } else {
             Box(

@@ -10,7 +10,7 @@
 
     <!-- Download Screen -->
     <string name="download_title">AI মডেল ডাউনলোড</string>
-    <string name="download_body">প্রথমবার চালু করতে AI মডেল ডাউনলোড করতে হবে (~২.৫৮ GB)। Wi-Fi ব্যবহার করুন।</string>
+    <string name="download_body">প্রথমবার চালু করতে AI মডেল ডাউনলোড করতে হবে (~২.৫৮ GB)।</string>
     <string name="btn_download_start">ডাউনলোড শুরু করুন</string>
     <string name="btn_retry">আবার চেষ্টা করুন</string>
     <string name="btn_download">ডাউনলোড করুন</string>
@@ -82,4 +82,9 @@
     <string name="my_signs_delete_title">সাইন মুছুন</string>
     <string name="my_signs_delete_confirm">\"%1$s\" এর রেকর্ড করা সাইন মুছে ফেলবেন?</string>
     <string name="my_signs_delete">মুছুন</string>
+
+    <!-- Attribution -->
+    <string name="attribution_title">কৃতজ্ঞতা স্বীকার</string>
+    <string name="attribution_desc">ISL সাইন ভিডিও কৃতিত্ব</string>
+    <string name="attribution_islrtc">এই অ্যাপে ব্যবহৃত কিছু ভারতীয় সাংকেতিক ভাষার ভিডিও ইন্ডিয়ান সাইন ল্যাঙ্গুয়েজ রিসার্চ অ্যান্ড ট্রেনিং সেন্টার (ISLRTC) থেকে সংগৃহীত, যা প্রতিবন্ধী ব্যক্তিদের ক্ষমতায়ন বিভাগ (DEPwD), সমাজ কল্যাণ মন্ত্রণালয়, ভারত সরকারের অধীনস্থ একটি স্বায়ত্তশাসিত সংস্থা।</string>
 </resources>

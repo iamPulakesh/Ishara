@@ -27,7 +27,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.isharaai.isl.R
-import com.isharaai.isl.core.speech.SpeechLanguage
+import com.isharaai.isl.speech.SpeechLanguage
 import com.isharaai.isl.core.theme.*
 import com.isharaai.isl.feature.onboarding.registerTarget
 

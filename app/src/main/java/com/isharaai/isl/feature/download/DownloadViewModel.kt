@@ -4,8 +4,8 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.*
-import com.isharaai.isl.core.inference.ModelDownloadManager
-import com.isharaai.isl.core.inference.ModelDownloadWorker
+import com.isharaai.isl.core.model.ModelDownloadManager
+import com.isharaai.isl.core.model.ModelDownloadWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch

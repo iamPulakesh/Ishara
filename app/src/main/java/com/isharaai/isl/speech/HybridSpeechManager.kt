@@ -284,9 +284,18 @@ class HybridSpeechManager(private val context: Context) {
                 AudioFormat.ENCODING_PCM_16BIT,
                 bufferSize * 2
             )
+            if (audioRecord?.state != AudioRecord.STATE_INITIALIZED) {
+                Log.e(TAG, "AudioRecord failed to initialize (permission missing or mic unavailable)")
+                audioRecord?.release()
+                audioRecord = null
+                listener?.onError("Microphone permission required")
+                return
+            }
             audioRecord!!.startRecording()
-        } catch (e: SecurityException) {
-            Log.e(TAG, "Microphone permission denied", e)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to start recording", e)
+            audioRecord?.release()
+            audioRecord = null
             listener?.onError("Microphone permission required")
             return
         }

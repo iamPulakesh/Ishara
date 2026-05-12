@@ -1,5 +1,6 @@
 package com.isharaai.isl.feature.chat
 
+import android.Manifest
 import android.net.Uri
 import android.util.Log
 import java.io.File
@@ -46,6 +47,17 @@ fun ChatScreen(
     var showNewChatDialog by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
     val context = LocalContext.current
+
+    // Microphone permission request
+    var pendingLanguage by remember { mutableStateOf<com.isharaai.isl.speech.SpeechLanguage?>(null) }
+    val micPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            pendingLanguage?.let { viewModel.startRecording(it) }
+        }
+        pendingLanguage = null
+    }
 
     // Gallery photo picker
     val scope = rememberCoroutineScope()
@@ -206,7 +218,10 @@ fun ChatScreen(
             },
             onAttachClick = { galleryLauncher.launch("image/*") },
             onCameraClick = onCameraClick,
-            onStartRecording = { lang -> viewModel.startRecording(lang) },
+            onStartRecording = { lang ->
+                pendingLanguage = lang
+                micPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+            },
             onStopRecording = { viewModel.stopRecording() }
         )
     }

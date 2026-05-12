@@ -15,8 +15,8 @@ import com.google.ai.edge.litertlm.Message
 import com.isharaai.isl.R
 import com.isharaai.isl.core.db.ChatMessageEntity
 import com.isharaai.isl.core.db.ChatSessionEntity
-import com.isharaai.isl.core.inference.LiteRTModelLoader
-import com.isharaai.isl.core.inference.ModelDownloadManager
+import com.isharaai.isl.core.model.LiteRTModelLoader
+import com.isharaai.isl.core.model.ModelDownloadManager
 import com.isharaai.isl.speech.HybridSpeechManager
 import com.isharaai.isl.speech.SpeechLanguage
 import dagger.hilt.android.lifecycle.HiltViewModel

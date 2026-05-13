@@ -1,4 +1,6 @@
+import java.io.BufferedReader
 import java.io.FileOutputStream
+import java.io.InputStreamReader
 import java.net.URI
 import java.util.Properties
 import java.util.zip.ZipEntry
@@ -100,26 +102,30 @@ tasks.register("downloadISLVideos") {
             return@doLast
         }
 
-        // Interactive prompt
-        val console = System.console()
-        val answer = if (console != null) {
-            console.readLine("\n Do you want to download ISL sign videos (~174 MB)? [y/N]: ")
+        // Check for -Pisl.download=true flag first
+        if (islDownloadFlag?.trim()?.lowercase()?.startsWith("y") == true ||
+            islDownloadFlag?.trim()?.lowercase() == "true") {
+            // Flag provided, proceed to download
         } else {
-            // Fallback for environments without a console (e.g. IDE)
-            logger.lifecycle("\n To download ISL videos, run: ./gradlew downloadISLVideos -Pisl.download=true")
-            islDownloadFlag
-        }
+            // Interactive prompt via stdin
+            print("\n Do you want to download default ISL sign videos? [y/N]: ")
+            System.out.flush()
+            val answer = try {
+                BufferedReader(InputStreamReader(System.`in`)).readLine()
+            } catch (_: Exception) { null }
 
-        if (answer?.trim()?.lowercase()?.startsWith("y") != true) {
-            logger.lifecycle(" Skipping ISL video download.")
-            return@doLast
+            if (answer?.trim()?.lowercase()?.startsWith("y") != true) {
+                logger.lifecycle(" Skipping ISL video download...")
+                logger.lifecycle(" Run later with: ./gradlew downloadISLVideos -Pisl.download=true")
+                return@doLast
+            }
         }
 
         // Download
         islRawDir.mkdirs()
         val zipDest = islZipFile
         val url = "$islRelease/isl-sign-videos.zip"
-        logger.lifecycle(" Downloading ISL sign videos (~174 MB)…")
+        logger.lifecycle(" Downloading ISL sign videos…")
 
         URI(url).toURL().openStream().use { input ->
             FileOutputStream(zipDest).use { output ->
@@ -178,7 +184,7 @@ android {
         ndk { abiFilters += listOf("arm64-v8a", "armeabi-v7a") }
     }
 
-    aaptOptions {
+    androidResources {
         noCompress += listOf("onnx", "txt")
     }
 

@@ -1,13 +1,13 @@
 # Ishara
 **An Offline-first, Multimodal AI Indian Sign Language (ISL) Assistant for the Hearing-Impaired Community**
 
-> **Ishara (ইশারা)** is a Bengali word meaning *sign* or *gesture*.
+> **Ishara** is a Bengali word meaning *sign* or *gesture*.
 
 ---
 
 ## Features
 - Transcribe your voice to find ISL translations in real-time.
-- Analyze real-world objects using your camera and teach you their sign.
+- Analyze real-world objects using your camera and teach you their sign. Check some signs [here](SIGN_LIBRARY.md).
 - Translate complex conversational phrases into ISL's unique SOV (Subject-Object-Verb) grammar.
 - Play instant, localized sign-language video snippets right inside the chat.
 - On-Device LLM — Built with Google's Gemma 4 model, parsing complex conversational context completely offline.
@@ -72,10 +72,16 @@
 
 ### Setup
 
+**Bash:**
 ```bash
 git clone https://github.com/iamPulakesh/Ishara.git
 cd Ishara
 ./gradlew installDebug
+```
+
+**PowerShell:**
+```powershell
+.\gradlew installDebug
 ```
 ---
 

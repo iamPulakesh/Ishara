@@ -1,6 +1,8 @@
 import java.io.FileOutputStream
 import java.net.URI
 import java.util.Properties
+import java.util.zip.ZipEntry
+import java.util.zip.ZipFile
 
 plugins {
     alias(libs.plugins.android.application)
@@ -72,8 +74,80 @@ tasks.register("downloadSherpaFiles") {
     }
 }
 
+// ISL Sign Language video clips — downloaded interactively from GitHub Releases.
+
+val islRelease = "https://github.com/iamPulakesh/Ishara/releases/download/ISL-sign-videos"
+val islZipFile = file("src/main/res/raw/isl-sign-videos.zip")
+val islRawDir  = file("src/main/res/raw")
+val islExpectedSize = 174_839_808L   // ~174 MB zip
+val islDownloadFlag = providers.gradleProperty("isl.download").orNull
+
+tasks.register("downloadISLVideos") {
+    group = "setup"
+    description = "Downloads ISL sign language video clips (interactive — asks before downloading)."
+    notCompatibleWithConfigurationCache("Uses System.console() for interactive input")
+
+    outputs.upToDateWhen {
+        // Skip if at least some sign videos already exist
+        islRawDir.exists() && (islRawDir.listFiles()?.count { it.extension == "mp4" } ?: 0) > 10
+    }
+
+    doLast {
+        // Check if videos already exist
+        val existingCount = islRawDir.listFiles()?.count { it.extension == "mp4" } ?: 0
+        if (existingCount > 10) {
+            logger.lifecycle(" ISL videos already present ($existingCount clips). Skipping.")
+            return@doLast
+        }
+
+        // Interactive prompt
+        val console = System.console()
+        val answer = if (console != null) {
+            console.readLine("\n Do you want to download ISL sign videos (~174 MB)? [y/N]: ")
+        } else {
+            // Fallback for environments without a console (e.g. IDE)
+            logger.lifecycle("\n To download ISL videos, run: ./gradlew downloadISLVideos -Pisl.download=true")
+            islDownloadFlag
+        }
+
+        if (answer?.trim()?.lowercase()?.startsWith("y") != true) {
+            logger.lifecycle(" Skipping ISL video download.")
+            return@doLast
+        }
+
+        // Download
+        islRawDir.mkdirs()
+        val zipDest = islZipFile
+        val url = "$islRelease/isl-sign-videos.zip"
+        logger.lifecycle(" Downloading ISL sign videos (~174 MB)…")
+
+        URI(url).toURL().openStream().use { input ->
+            FileOutputStream(zipDest).use { output ->
+                input.copyTo(output)
+            }
+        }
+        logger.lifecycle(" Download complete. Extracting…")
+
+        // Extract zip
+        ZipFile(zipDest).use { zip ->
+            zip.entries().asSequence().forEach { entry: ZipEntry ->
+                if (!entry.isDirectory && entry.name.endsWith(".mp4")) {
+                    val outFile = File(islRawDir, File(entry.name).name)
+                    zip.getInputStream(entry).use { src ->
+                        outFile.outputStream().use { dst -> src.copyTo(dst) }
+                    }
+                }
+            }
+        }
+        zipDest.delete()
+
+        val count = islRawDir.listFiles()?.count { it.extension == "mp4" } ?: 0
+        logger.lifecycle(" Extracted $count ISL sign videos successfully.")
+    }
+}
+
 tasks.matching { it.name == "preBuild" }.configureEach {
-    dependsOn("downloadSherpaFiles")
+    dependsOn("downloadSherpaFiles", "downloadISLVideos")
 }
 
 val localProps = Properties().apply {

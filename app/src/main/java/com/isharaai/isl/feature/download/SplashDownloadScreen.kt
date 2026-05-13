@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.isharaai.isl.R
 import com.isharaai.isl.core.theme.*
+import androidx.compose.ui.platform.LocalContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -25,9 +26,46 @@ fun SplashDownloadScreen(
     viewModel: DownloadViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
-    LaunchedEffect(uiState.isComplete) {
-        if (uiState.isComplete) onDownloadComplete()
+    // Show restart dialog when download completes
+    if (uiState.isComplete) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = {
+                Text(
+                    "Download Complete!\nডাউনলোড সম্পন্ন হয়েছে!",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            },
+            text = {
+                Text(
+                    "Please restart the app to continue.\nঅ্যাপটি পুনরায় চালু করুন।",
+                    textAlign = TextAlign.Center,
+                    color = TextMedium,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        // Restart the app
+                        val intent = context.packageManager.getLaunchIntentForPackage(context.packageName)
+                        intent?.addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP or android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                        context.startActivity(intent)
+                        Runtime.getRuntime().exit(0)
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = AppGreen),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("Restart App", fontWeight = FontWeight.Bold)
+                }
+            },
+            shape = RoundedCornerShape(20.dp)
+        )
     }
 
     Scaffold(

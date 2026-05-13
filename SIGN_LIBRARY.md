@@ -1,6 +1,6 @@
 # Ishara — ISL Sign Library
 
-> **351 ISL video signs** bundled as `res/raw/sign_*.mp4`  
+> **349 ISL video signs** bundled as `res/raw/sign_*.mp4`  
 
 ---
 

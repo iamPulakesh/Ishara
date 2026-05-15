@@ -5,14 +5,12 @@
 
 ---
 
-## Features
-- Transcribe your voice to find ISL translations in real-time.
-- Analyze real-world objects using your camera and teach you their sign. Check some signs [here](SIGN_LIBRARY.md).
-- Translate complex conversational phrases into ISL's unique SOV (Subject-Object-Verb) grammar.
-- Play instant, localized sign-language video snippets right inside the chat.
-- On-Device LLM — Built with Google's Gemma 4 model, parsing complex conversational context completely offline.
-- Complete Privacy — 100% offline, your voice, images and chat history never leave your device.
-- Dynamic Language Support — Native bilingual support for both English and Bengali (বাংলা).
+## Key Features
+- **Offline & Private:** The entire application runs locally on the device. No internet connection is required (only one time needed to download the Gemma 4 model), ensuring complete user privacy as voice, camera data, and chat history never leave the user's phone.
+- **In-Chat Video Playback:** Automatically parses the AI's response and seamlessly plays localized, animated ISL video snippets directly within the chat interface.
+- **Camera-Based Real-Time Learning:** Users can point their smartphone camera at real-world objects. The app analyzes the image and instantly replies with the corresponding ISL sign. Check the built-in signs [here](SIGN_LIBRARY.md).
+- **Real-Time Speech-to-Text:** Converts spoken words into text instantly using the offline Sherpa-ONNX engine, allowing family members to speak naturally to the app.
+- **Bilingual Support:** Natively supports both English and Bengali (বাংলা) for voice input, text input, and AI processing.
 
 ---
 
@@ -27,37 +25,6 @@
   * **Google LiteRT (TensorFlow Lite RunTime):** On-device Large Language/Vision Model execution.
   * **Sherpa-ONNX:** Real-time, offline Voice Activity Detection & Speech-to-Text inference.
 ---
-
-## Architecture Diagram
-
-```
-        User Input (Text / Image)
-                   │
-                   ▼
-            ChatViewModel
-                   │
-                   ▼
-      ISL System Prompt Injected
-        (SOV grammar rules)
-                   │
-                   ▼
-      LiteRT Engine — Gemma 4 E2B-IT
-        on-device via JNI mmap
-                   │
-                   ▼
-          Raw Model Response
-                   │
-                   ▼
-           ISL Tag Parser
-          ┌────────┴────────┐
-          │                 │
-     Plain Text       [[ISL: WORD]]
-     Response              Tags
-          │                 │
-          ▼                 ▼
-     Chat Bubble       Video Player
-                    (sign_*.mp4 playback)
-```
 
 ---
 

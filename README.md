@@ -26,7 +26,6 @@
   * **Sherpa-ONNX:** Real-time, offline Voice Activity Detection & Speech-to-Text inference.
 ---
 
----
 
 ## Development
 

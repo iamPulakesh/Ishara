@@ -93,3 +93,6 @@ Thumbs.db
 #others
 app/src/main/res/raw/
 *.mp4
+
+draw.io.xml
+
